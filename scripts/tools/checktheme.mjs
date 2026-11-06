@@ -6,6 +6,7 @@
 import puppeteer from 'puppeteer-core';
 
 const BASE = process.argv[2] ?? 'http://127.0.0.1:9999';
+const BP = process.argv[3] ?? '';   // 子路径前缀（静态导出时如 /ziwei）
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 
 const browser = await puppeteer.launch({
@@ -20,7 +21,7 @@ const push = (name, val) => results.push(`${name}: ${val}`);
 // ── 1. 首页：iPhone 视口（390×844），检查导航与主题切换 ──
 const iPhone = await browser.newPage();
 await iPhone.setViewport({ width: 390, height: 844, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
-await iPhone.goto(`${BASE}/`, { waitUntil: 'networkidle2' });
+await iPhone.goto(`${BASE}${BP}/`, { waitUntil: 'networkidle2' });
 const nav = await iPhone.evaluate(() => {
   const header = document.querySelector('header');
   const links = header ? [...header.querySelectorAll('a')].map(a => a.textContent.trim()) : [];
@@ -48,7 +49,7 @@ push('切换后主题', await iPhone.evaluate(() => document.documentElement.get
 
 // ── 2. 知识库页（暗色）：检查正文盒子背景与文字色 ──
 const kb = await browser.newPage();
-await kb.goto(`${BASE}/knowledge/ziwei/love`, { waitUntil: 'networkidle2' });
+await kb.goto(`${BASE}${BP}/knowledge/ziwei/love`, { waitUntil: 'networkidle2' });
 const styles = await kb.evaluate(() => {
   const theme = document.documentElement.getAttribute('data-theme');
   const paras = [...document.querySelectorAll('p, div')].filter(d => d.textContent.length > 60 && d.children.length === 0);
@@ -75,7 +76,7 @@ push('正文对比度(盒底vs文字)', ratio(styles.boxBg, styles.text));
 
 // ── 3. 排盘页暗色：宫格底色与文字 ──
 const chart = await browser.newPage();
-await chart.goto(`${BASE}/chart?y=1986&m=8&d=20&sh=3&g=f`, { waitUntil: 'networkidle2', defaultTimeout: 20000 });
+await chart.goto(`${BASE}${BP}/chart?y=1986&m=8&d=20&sh=3&g=f`, { waitUntil: 'networkidle2', defaultTimeout: 20000 });
 await new Promise(r => setTimeout(r, 1500));
 const chartStyles = await chart.evaluate(() => {
   const cell = [...document.querySelectorAll('div')].find(d => /命宫|迁移|夫妻/.test(d.textContent) && d.className.includes('palace'));
@@ -98,7 +99,7 @@ push('排盘 13维解读已生成', chartStyles.readings);
 // ── 4. 合盘页 & 格局页在暗色下的底色 ──
 for (const p of ['/heming', '/patterns', '/library', '/guides']) {
   const pg = await browser.newPage();
-  await pg.goto(`${BASE}${p}`, { waitUntil: 'networkidle2' });
+  await pg.goto(`${BASE}${BP}${p}`, { waitUntil: 'networkidle2' });
   const v = await pg.evaluate(() => ({
     theme: document.documentElement.getAttribute('data-theme'),
     bodyBg: getComputedStyle(document.body).backgroundColor,

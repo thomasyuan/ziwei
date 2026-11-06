@@ -1,0 +1,61 @@
+name: 发布到 GitHub Pages（静态导出）
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci --no-audit --no-fund
+
+      - name: 静态导出（项目站子路径 = 仓库名 /ziwei）
+        run: npm run build:pages
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+          # canonical / OG / sitemap 用的站点根地址
+          NEXT_PUBLIC_SITE_URL: https://thomasyuan.github.io/ziwei
+
+      - name: 校验产物
+        run: |
+          test -f out/index.html
+          test -f out/chart.html
+          test -f out/knowledge/ziwei/love.html
+          test -f out/patterns.html
+          test -f out/sitemap.xml
+          test -f out/.nojekyll
+          echo "页面数：$(find out -name '*.html' | wc -l)"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
