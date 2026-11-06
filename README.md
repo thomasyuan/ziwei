@@ -47,6 +47,8 @@
 
 **确定性生成**：同一张盘恒得同一份解读，不经 AI；AI 面板只做追问，且把规则解读作为上下文送入模型。
 
+## 部署方式（见下方 A/B/C）
+
 ## 跑起来
 
 ```bash
@@ -114,3 +116,44 @@ site/
 - 加流年流月流日流时四层面板（`lib/ziwei/sihua.ts` 已支持四化，`shier-shen.ts` 已支持十二神煞）。
 - 加命盘历史与收藏（本地 storage，无账号）。
 - 加「准/不准」反馈闭环，用于论断库迭代（哪些断语在真实盘上不准，改条件与分档）。
+## 部署方式
+
+### A) Docker 镜像（含服务端，AI 可用）
+
+镜像已构建并推送到 Docker Hub：**`thomasyuan/ziwei:1.0.0`**（`linux/amd64`，约 360 MB，非 root 用户，带健康检查）。
+
+```bash
+docker pull thomasyuan/ziwei:1.0.0
+docker run -d --name ziwei -p 9999:3000 --restart unless-stopped thomasyuan/ziwei:1.0.0
+# 局域网访问：http://<宿主机IP>:9999
+
+# 带 AI 追问（OpenAI 兼容接口任选）：
+docker run -d --name ziwei -p 9999:3000 --restart unless-stopped   -e AI_PROVIDER=deepseek -e AI_API_KEY=sk-xxx   -e NEXT_PUBLIC_SITE_URL=http://192.168.66.35:9999   thomasyuan/ziwei:1.0.0
+```
+
+- 容器内监听 `0.0.0.0:3000`（`HOSTNAME=0.0.0.0`、`PORT=3000` 已在镜像里设好）；`-p 9999:3000` 发布在宿主机所有网卡（`0.0.0.0`）。
+- `NEXT_PUBLIC_SITE_URL` 是**构建时**注入的（sitemap/canonical/OG 用），运行时改环境变量无效；重新构建时传：
+  `docker build --build-arg NEXT_PUBLIC_SITE_URL=https://your-domain -t thomasyuan/ziwei:1.0.0 .`
+- 用 compose：`docker compose up -d`（见 `compose.yaml`）。
+- 本地构建：`docker build -t thomasyuan/ziwei:1.0.0 .`（多阶段，产物只含 `node:23-alpine` + standalone）。
+
+### B) GitHub Pages / 纯静态托管（AI 不可用）
+
+排盘、13 维解读、合盘规则、格局目录、古籍阅读与搜索**全在浏览器里运行**（论断库与格局识别是纯函数，动态导入做代码分割），所以可以静态导出：
+
+```bash
+# 根路径部署（如 Cloudflare Pages / Vercel 静态 / nginx 静态目录）
+npm run build:static          # 产出 out/
+# GitHub Pages 项目站（https://<user>.github.io/<repo>/）
+npm run build:pages           # 带 basePath=/ziwei（把 /ziwei 换成你的仓库名）
+```
+
+`out/` 里已带 `public/.nojekyll`；部署到 Pages 时用 `out/` 作为发布目录。
+
+- 静态模式下没有服务端：AI 面板会提示「AI 追问需要服务端」；`/api/reading`（浏览器已本地生成，不走 API）与 `/api/heming`（AI 部分）不可用。
+- 规则解读与合盘评分在静态模式下完全可用。
+- 本地预览静态产物：`npm run serve:static`（http://127.0.0.1:3996）。
+
+### C) VPS / Vercel（服务端全功能）
+
+`npm run build`（standalone 产物）+ `node .next/standalone/server.js`；或推 Vercel（配 `AI_API_KEY` 环境变量）。

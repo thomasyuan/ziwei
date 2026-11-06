@@ -1,0 +1,6 @@
+:HL["/ziwei/_next/static/chunks/043cg20r2_t7k.css","style"]
+4:[["children",{"s":"__PAGE__","h":160}]]
+3:[["children",{"s":{"n":"topic","t":"d","k":"wealth","s":[]},"h":65632,"c":"$Q4"}]]
+2:[["children",{"s":{"n":"star","t":"d","k":"tianfu","s":[]},"h":196704,"c":"$Q3"}]]
+1:[["children",{"s":"knowledge","h":131168,"c":"$Q2"}]]
+0:{"b":"KEVxU7kbQjGYqeuiU9rh0","t":{"t":{"s":"","h":131152,"c":"$Q1"}}}

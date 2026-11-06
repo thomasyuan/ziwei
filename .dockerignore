@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+.git
+.github
+scripts
+*.log
+*.html
+.env
+.env.local
+.env.local.*
+Dockerfile
+.dockerignore
+README.md
+tsconfig.tsbuildinfo

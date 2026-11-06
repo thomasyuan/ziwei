@@ -16,7 +16,7 @@ import { streamChat, loadAiConfig } from '@/lib/ai/client';
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  let body: { chartA?: ZiweiChart; chartB?: ZiweiChart; question?: string };
+  let body: { chartA?: ZiweiChart; chartB?: ZiweiChart; question?: string; aiOnly?: boolean };
   try { body = await req.json(); } catch {
     return NextResponse.json({ error: 'invalid json' }, { status: 400 });
   }

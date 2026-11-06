@@ -1,0 +1,27 @@
+1:"$Sreact.fragment"
+2:"/ziwei/_next/static/chunks/0uiabagou8t40.js"
+3:I[80492,["$2"],"ThemeProvider"]
+4:I[39756,["$2"],"default"]
+5:I[37457,["$2"],"default"]
+6:I[2355,["$2"],"Analytics"]
+7:I[57215,["$2"],"SpeedInsights"]
+9:I[47257,["$2"],"ClientPageRoot"]
+a:"/ziwei/_next/static/chunks/1_j1ndf9469wn.js"
+b:"/ziwei/_next/static/chunks/3_41wvnmss5s2.js"
+c:I[31713,["$2","$a","$b"],"default"]
+f:I[97367,["$2"],"OutletBoundary"]
+10:"$Sreact.suspense"
+12:"ViewportBoundary"
+13:I[97367,["$2"],"$12"]
+15:"MetadataBoundary"
+16:I[97367,["$2"],"$15"]
+18:I[68027,["$2"],"default",1]
+:HL["/ziwei/_next/static/chunks/043cg20r2_t7k.css","style"]
+8:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$1","c",{"children":[["$","$L9",null,{"Component":"$c","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@d","$@e"]}}],[["$","script","script-0",{"src":"/ziwei/_next/static/chunks/1_j1ndf9469wn.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/ziwei/_next/static/chunks/3_41wvnmss5s2.js","async":true,"nonce":"$undefined"}]],["$","$Lf",null,{"children":["$","$10",null,{"name":"Next.MetadataOutlet","children":"$@11"}]}]]}],"p":false,"v":null}}]]
+0:{"P":null,"c":["",""],"q":"","i":false,"t":{"t":{"s":"","h":528,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/ziwei/_next/static/chunks/043cg20r2_t7k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/ziwei/_next/static/chunks/0uiabagou8t40.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"zh-CN","suppressHydrationWarning":true,"children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"(function(){try{var t=localStorage.getItem('ziwei-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);else document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();"}}]}],["$","body",null,{"className":"min-h-screen","children":[["$","$L3",null,{"children":["$","$L4",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L5",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L6",null,{}],["$","$L7",null,{}]]}]]}]]}],"p":false,"v":null},"c":"$Q8"},"h":{"r":["$","$1","h",{"children":[null,["$","$L13",null,{"children":"$L14"}],["$","$L16",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$10",null,{"name":"Next.Metadata","children":"$L17"}]}],null]}],null]}],"p":false,"v":null}},"m":"$undefined","G":["$18",[["$","link","0",{"rel":"stylesheet","href":"/ziwei/_next/static/chunks/043cg20r2_t7k.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"KEVxU7kbQjGYqeuiU9rh0"}
+d:{}
+e:"$8:0:1:d:r:props:children:0:props:serverProvidedParams:params"
+14:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+19:I[27201,["$2"],"IconMark"]
+11:null
+17:[["$","title","0",{"children":"紫微斗数排盘 · 十四主星四化 · 十三维解读"}],["$","meta","1",{"name":"description","content":"开源安星引擎即时起盘：十四主星、六吉六煞、四化飞星、庙旺利陷全部入宫；命格、性格、感情、事业、财运、健康、兄弟、子女、迁移、人际、田宅、福德、父母十三维逐条生成，可追到本宫星曜与古籍原文。"}],["$","meta","2",{"name":"keywords","content":"紫微斗数, 紫微斗数排盘, 倪海厦, 紫微斗数全书, 紫微斗数全集, 骨髓赋, 命盘, 四化, 14主星, 12宫位, 格局"}],["$","link","3",{"rel":"canonical","href":"http://localhost:3000"}],["$","meta","4",{"property":"og:title","content":"紫微斗数排盘 · 十四主星四化 · 十三维解读"}],["$","meta","5",{"property":"og:description","content":"开源安星引擎起盘，十四主星与四化全量入宫；十三维解读按本宫、四化、辅煞、三方四正与运限生成，可逐条复核。"}],["$","meta","6",{"property":"og:url","content":"http://localhost:3000"}],["$","meta","7",{"property":"og:site_name","content":"紫微斗数研究"}],["$","meta","8",{"property":"og:locale","content":"zh_CN"}],["$","meta","9",{"property":"og:type","content":"website"}],["$","meta","10",{"name":"twitter:card","content":"summary"}],["$","meta","11",{"name":"twitter:title","content":"紫微斗数排盘 · 十四主星四化 · 十三维解读"}],["$","meta","12",{"name":"twitter:description","content":"开源安星引擎起盘，十四主星与四化全量入宫；十三维解读按本宫、四化、辅煞、三方四正与运限生成，可逐条复核。"}],["$","link","13",{"rel":"icon","href":"/favicon.svg"}],["$","$L19","14",{}]]

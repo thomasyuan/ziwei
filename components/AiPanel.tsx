@@ -114,7 +114,7 @@ export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
         }
       }
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'AI 接口不可用：请在 .env.local 配置 AI_API_KEY。排盘与规则解读不需要 Key。' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'AI 追问需要服务端：Docker / VPS 部署时配置 AI_API_KEY 才能用。静态站点（如 GitHub Pages）没有 AI 接口；排盘与规则解读不受影响。' }]);
     } finally {
       setLoading(false);
       loadingRef.current = false;

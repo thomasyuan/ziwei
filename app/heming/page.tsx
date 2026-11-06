@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import ChartBoard from '@/components/ChartBoard';
 import { formToBirthInfo } from '@/lib/ziwei/share';
 import { generateChart as buildChart } from '@/lib/ziwei/algorithm';
+import { analyzeHeming } from '@/lib/interpret/heming';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 import { useTheme } from '@/components/ThemeProvider';
 
@@ -111,17 +112,24 @@ export default function HemingPage() {
       setChartA(cA);
       setChartB(cB);
 
+      // 规则引擎在浏览器里跑：静态部署（GitHub Pages）也能出结论
+      const rule = analyzeHeming(cA, cB);
+      const head = `**【规则引擎结论·${rule.scoreLabel}】**\n${rule.lines.map(l => `${l.title}：${l.body}`).join('\n\n')}\n建议：${rule.advice.replace(/\n/g, '；')}`;
+      let text = head;
+      setAnalysis(text);
+
       const res = await fetch('/api/heming', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined }),
+        // aiOnly：规则结论本地已给，服务端只出 AI 深挖部分
+        body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined, aiOnly: true }),
       });
       if (res.status === 404) { setApiMissing(true); throw new Error('api-missing'); }
       if (!res.ok || !res.body) throw new Error();
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let text = '';
+      // text 已用规则结论（head）初始化，AI 流直接续写
       let pendingLine = '';
 
       while (true) {
@@ -266,7 +274,7 @@ export default function HemingPage() {
           {analysisError && (
             <div style={{ padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--bdr)', background: 'var(--bg-card)', fontSize: '13px', color: 'var(--tx-2)', marginTop: '12px' }}>
               {apiMissing
-                ? '合盘接口调用失败（/api/heming）。两人各自的命盘可在下方直接查看，也可到「排盘」页看完整盘。'
+                ? 'AI 深挖不可用（需要服务端 + AI_API_KEY）。上方的规则引擎结论已用浏览器本地算出，不受影响；双盘可在下方切换查看。'
                 : '分析暂时不可用，请重试。'}
             </div>
           )}

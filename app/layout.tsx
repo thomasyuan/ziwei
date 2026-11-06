@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   description: '开源安星引擎即时起盘：十四主星、六吉六煞、四化飞星、庙旺利陷全部入宫；命格、性格、感情、事业、财运、健康、兄弟、子女、迁移、人际、田宅、福德、父母十三维逐条生成，可追到本宫星曜与古籍原文。',
   keywords: '紫微斗数, 紫微斗数排盘, 倪海厦, 紫微斗数全书, 紫微斗数全集, 骨髓赋, 命盘, 四化, 14主星, 12宫位, 格局',
   metadataBase: new URL(SITE_URL),
+  icons: { icon: '/favicon.svg' },
   alternates: {
     canonical: '/',
   },

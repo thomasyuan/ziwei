@@ -8,6 +8,8 @@
  */
 
 import type { MetadataRoute } from 'next';
+// 静态导出（GitHub Pages）下也要能预渲染
+export const dynamic = 'force-static';
 import { ALL_BOOKS } from '@/lib/classics';
 import { getAllKnowledgeRoutes } from '@/lib/seo/knowledge';
 import { SITE_URL } from '@/lib/site';

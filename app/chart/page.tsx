@@ -40,21 +40,20 @@ function WorkspaceInner() {
   const [starDetail, setStarDetail] = useState<{ star: Star; palace: Palace } | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
 
+  // 解读在浏览器里生成：论断库与格局识别都是纯函数，动态导入做代码分割，
+  // 这样静态导出（GitHub Pages）也能出完整解读，不依赖服务端 API。
   const fetchReadings = useCallback(async (c: ZiweiChart, y: number, dx?: number | null) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/reading', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chart: c, year: y, dxIndex: dx ?? undefined }),
-      });
-      const j = await res.json();
-      if (Array.isArray(j.readings)) {
-        setReadings(j.readings);
-        setPatterns(j.patterns ?? []);
-      }
-    } catch { /* 静默：面板显示为空 */ }
-    finally { setLoading(false); }
+      const { detectPatterns } = await import('@/lib/ziwei/patterns');
+      const { generateAllReadings } = await import('@/lib/interpret/generate');
+      const patterns = detectPatterns(c);
+      const readings = generateAllReadings(c, { patterns, year: y, dxIndex: dx ?? undefined });
+      setPatterns(patterns);
+      setReadings(readings);
+    } catch (e) {
+      console.error('reading generation failed', e);
+    } finally { setLoading(false); }
   }, []);
 
   const openChart = useCallback((info: BirthInfo) => {

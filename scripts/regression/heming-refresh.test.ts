@@ -12,7 +12,7 @@ assert.ok(start >= 0 && end > start);
 const body = `export function makeRun(ctx) {
   const {chartA,chartB,formA,formB,generateChart,formToBirthInfo,setFormError,
     setAnalyzing,setAnalysis,setAnalysisError,setChartA,setChartB,fetch,
-    setApiMissing,analysisRef} = ctx;
+    setApiMissing,analysisRef,analyzeHeming} = ctx;
   const useCallback = (fn) => fn;
   ${source.slice(start, end)}
   return runAnalysis;
@@ -35,6 +35,7 @@ const context = () => ({
   setChartB: (value: unknown) => { chartB = value; },
   setFormError: noop, setAnalyzing: noop, setAnalysis: noop, setAnalysisError: noop,
   setApiMissing: noop, analysisRef: { current: null },
+  analyzeHeming: () => ({ score: 3, scoreLabel: '三星：各有棱角，需磨合', lines: [], advice: '测试桩' }),
   fetch: async (_url: string, options: { body: string }) => {
     requests.push(JSON.parse(options.body));
     return { status: 200, ok: true, body: new ReadableStream({ start(controller) { controller.close(); } }) };

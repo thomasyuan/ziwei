@@ -10,7 +10,7 @@ assert.ok(start >= 0 && end > start);
 const body = `export function makeRun(ctx) {
   const {chartA,chartB,formA,formB,generateChart,formToBirthInfo,setFormError,
     setAnalyzing,setAnalysis,setAnalysisError,setChartA,setChartB,fetch,
-    setApiMissing,analysisRef} = ctx;
+    setApiMissing,analysisRef,analyzeHeming} = ctx;
   const useCallback = (fn) => fn;
   ${source.slice(start, end)}
   return runAnalysis;
@@ -21,6 +21,10 @@ new Function('exports', 'setTimeout', ts.transpileModule(body, {
 }).outputText)(moduleExports, () => {});
 const noop = () => {};
 const form = { year: '1990', month: '1', day: '1', gender: 'male', clockHour: '8', clockMinute: '0' };
+const STUB = { score: 3, scoreLabel: '三星：各有棱角，需磨合', lines: [{ title: '夫妻宫互参', body: 'A' }], advice: ['建议1','建议2'].join('\n') };
+const HEAD = ['**【规则引擎结论·' + STUB.scoreLabel + '】**',
+  STUB.lines.map(l => l.title + '：' + l.body).join('\n\n'),
+  '建议：' + STUB.advice.split('\n').join('；')].join('\n');
 async function consume(chunks: Uint8Array[]) {
   let text = '';
   let failed = false;
@@ -28,6 +32,7 @@ async function consume(chunks: Uint8Array[]) {
     chartA: {}, chartB: {}, formA: form, formB: form,
     generateChart: async () => ({}), formToBirthInfo: () => ({}),
     setChartA: noop, setChartB: noop, setFormError: noop, setAnalyzing: noop,
+    analyzeHeming: () => STUB,
     setAnalysis: (value: string) => { text = value; },
     setAnalysisError: (value: boolean) => { failed = value; },
     setApiMissing: noop, analysisRef: { current: null },
@@ -44,11 +49,11 @@ async function main() {
       `data: {"delta":{"text":"你好"}}${ending}${ending}` +
       `data: {"delta":{"text":"世界"}}${ending}${ending}data: [DONE]${ending}${ending}`,
     );
-    assert.equal(await consume([bytes]), '你好世界');
+    assert.equal(await consume([bytes]), HEAD + '你好世界');
     for (let cut = 1; cut < bytes.length; cut++) {
-      assert.equal(await consume([bytes.slice(0, cut), bytes.slice(cut)]), '你好世界', `byte split ${cut}`);
+      assert.equal(await consume([bytes.slice(0, cut), bytes.slice(cut)]), HEAD + '你好世界', `byte split ${cut}`);
     }
-    assert.equal(await consume(Array.from(bytes, byte => Uint8Array.of(byte))), '你好世界');
+    assert.equal(await consume(Array.from(bytes, byte => Uint8Array.of(byte))), HEAD + '你好世界');
   }
   console.log('Heming SSE byte-fragment regressions passed');
 }
