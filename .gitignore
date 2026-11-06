@@ -9,3 +9,9 @@ dist/
 node_modules
 
 AGENTS.md
+
+dom*.html
+prod.log
+dev.log
+out.html
+page.out
