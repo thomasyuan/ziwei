@@ -24,3 +24,7 @@ standalone.log
 .rd.json
 .o.html
 .static.log
+
+.pptr-profile
+.pptr-profile2
+.dbg.mjs
