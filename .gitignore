@@ -15,3 +15,12 @@ prod.log
 dev.log
 out.html
 page.out
+
+out
+standalone.log
+.chart.json
+.req.json
+.req2.json
+.rd.json
+.o.html
+.static.log
