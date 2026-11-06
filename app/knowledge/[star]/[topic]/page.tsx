@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ star: str
   const data = getKnowledge(star, topic as TopicKey);
   if (!data.exists) return {};
 
-  const title = `${star}入${data.palaceName}宫 · ${data.topicLabel} · 倪海厦体系详解`;
+  const title = `${star}入${data.palaceName}宫 · ${data.topicLabel} · 紫微斗数论断`;
   const description = data.parsed.dingdiao
     || `${star}入${data.palaceName}宫的紫微斗数解读 — 基于倪海厦《天纪》体系与古籍《紫微斗数全集》《骨髓赋》。`;
 
@@ -120,7 +120,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
         {/* 标题区 */}
         <header style={{ marginBottom: '36px' }}>
           <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.25em', marginBottom: '8px' }}>
-            {data.topicLabel} · 倪海厦体系详解
+            {data.topicLabel} · 传统体系 · 本站论断库
           </div>
           <h1 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em', lineHeight: 1.2 }}>
             {star}入{data.palaceName}宫
@@ -223,7 +223,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
                     textDecoration: 'none',
                   }}
                 >
-                  {star}入{d.palaceName}
+                  {star}入{d.palaceName}·{d.topicLabel}
                 </Link>
               );
             })}

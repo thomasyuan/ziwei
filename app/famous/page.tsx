@@ -44,7 +44,7 @@ export default function FamousPage() {
                 {list.map(p => {
                   const q = new URLSearchParams({
                     y: String(p.year), m: String(p.month), d: String(p.day),
-                    h: String(p.hour), g: p.gender === 'male' ? 'm' : 'f', n: p.name,
+                    sh: String(p.hour), g: p.gender === 'male' ? 'm' : 'f', n: p.name,
                   });
                   return (
                     <Link key={p.id} href={`/chart?${q.toString()}`}

@@ -81,7 +81,7 @@ export default function Home() {
     if (!canGo) return;
     const p = new URLSearchParams({
       y: quick.year, m: quick.month, d: quick.day,
-      h: quick.hour, g: quick.gender === 'male' ? 'm' : 'f',
+      sh: quick.hour, g: quick.gender === 'male' ? 'm' : 'f',
     });
     router.push(`/chart?${p.toString()}`);
   };

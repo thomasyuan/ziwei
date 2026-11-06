@@ -70,6 +70,7 @@ export default function HemingPage() {
   const [apiMissing, setApiMissing] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const analysisRef = useRef<HTMLDivElement>(null);
+  const [showChart, setShowChart] = useState<'a' | 'b' | null>(null);
 
   // ─── 起盘（单次调用，返回 chart 给统一流程使用）──────────
   // 开源版不含后端 /api/generate：直接用本仓库的排盘引擎在浏览器里起盘
@@ -149,8 +150,6 @@ export default function HemingPage() {
       setAnalyzing(false);
     }
   }, [formA, formB, generateChart]);
-
-  const [showChart, setShowChart] = useState<'a' | 'b' | null>(null);
 
   const cardStyle = {
     background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.9)',

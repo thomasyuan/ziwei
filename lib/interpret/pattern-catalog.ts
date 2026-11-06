@@ -1,6 +1,6 @@
 /**
  * 格局目录 —— 由排盘引擎扫盘生成（静态数据，构建时零成本）
- * 生成方式：npx tsx gen-catalog.mjs（扫 YEARS.length*12*12*2 张盘，覆盖 70 种格局）
+ * 生成方式：npx tsx gen-catalog.mjs（扫 11,088 张盘，覆盖 70 种格局）
  * 每条含 name / level / description / palaces / source 与一条示例条件。
  */
 

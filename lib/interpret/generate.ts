@@ -58,18 +58,34 @@ function findPalace(chart: ZiweiChart, key: PalaceKey): Palace | undefined {
   return chart.palaces.find(p => palaceKey(p) === key);
 }
 
-function majorStars(p: Palace): { name: string; brightness?: string; sihua?: string; borrowed: boolean }[] {
+function majorStars(
+  chart: ZiweiChart, p: Palace,
+): { name: string; brightness?: string; sihua?: string; borrowed: boolean }[] {
   const majors = p.stars.filter(s => s.type === 'major');
   if (majors.length > 0) {
     return majors.map(s => ({ name: s.name, brightness: s.brightnessRaw, sihua: s.siHua, borrowed: false }));
   }
-  return (p.borrowedStars ?? []).map(n => ({ name: n, brightness: undefined, sihua: undefined, borrowed: true }));
+  // 空宫借对宫：亮度与四化取对宫那颗星的实值（借星不移，庙旺照本宫）
+  const src = chart.palaces.find(x => x.name === p.borrowedFromName)
+    ?? chart.palaces.find(x => x.branch === (p.branch + 6) % 12);
+  return (p.borrowedStars ?? []).map(n => {
+    const s = src?.stars.find(x => x.name === n);
+    return { name: n, brightness: s?.brightnessRaw, sihua: s?.siHua, borrowed: true };
+  });
 }
 
-/** 该宫的四化（含自化），逐条列出 */
-function palaceSihuaLines(p: Palace, viewLabel: string): string[] {
+/** 本宫四化；空宫时把借自对宫的四化也算进来（借星不移，四化照本宫） */
+function palaceSihuaLines(chart: ZiweiChart, p: Palace, viewLabel: string): string[] {
   const lines: string[] = [];
-  for (const s of p.stars) {
+  const source = p.isEmpty
+    ? (chart.palaces.find(x => x.name === p.borrowedFromName) ?? chart.palaces.find(x => x.branch === (p.branch + 6) % 12))
+    : undefined;
+  const pool = p.stars.concat(
+    (source && p.isEmpty)
+      ? source.stars.filter(s => s.type === 'major' && s.siHua).map(s => ({ ...s, borrowed: true }))
+      : [],
+  );
+  for (const s of pool) {
     if (!s.siHua) continue;
     const huaKey = (['禄', '权', '科', '忌'] as const).includes(s.siHua as never)
       ? ({ '禄': 'lu', '权': 'quan', '科': 'ke', '忌': 'ji' } as Record<string, SihuaKey>)[s.siHua]
@@ -77,7 +93,8 @@ function palaceSihuaLines(p: Palace, viewLabel: string): string[] {
     if (!huaKey) continue;
     const note = getSihuaNote(s.name, huaKey);
     if (!note) continue;
-    lines.push(`${viewLabel}·${s.name}化${s.siHua}（${note.key}）：${note.core}`);
+    const tag = (s as { borrowed?: boolean }).borrowed ? '（借星照入本宫）' : '';
+    lines.push(`${viewLabel}·${s.name}化${s.siHua}（${note.key}）${tag}：${note.core}`);
   }
   for (const m of p.selfSihua ?? []) {
     const huaKey = ({ '禄': 'lu', '权': 'quan', '科': 'ke', '忌': 'ji' } as Record<string, SihuaKey>)[m.siHua];
@@ -134,7 +151,7 @@ function daXianSection(chart: ZiweiChart, topicPalace: Palace, dxIndex?: number)
     `大限（虚岁 ${dx.startAge}–${dx.endAge}）走【${palaceDisplay(dxPalace)}】，宫干${STEMS[dxPalace.stem]}。`
     + `此限主管：${PALACE_ROLE[palaceKey(dxPalace)]}。`,
   );
-  const stars = majorStars(dxPalace);
+  const stars = majorStars(chart, dxPalace);
   if (stars.length) {
     lines.push(
       `大限命宫主星：${stars.map(s => `${s.name}${s.sihua ? '化' + s.sihua : ''}（${brightnessGroup(s.brightness)}）`).join('、')}。`
@@ -173,7 +190,7 @@ function liuNianSection(chart: ZiweiChart, topicPalace: Palace, year: number): S
   const lines: string[] = [];
   lines.push(`流年 ${year}（${STEMS[stemIdx]}${BRANCHES[branchIdx]}年），虚岁 ${age}；流年命宫在【${palaceDisplay(lnPalace)}】（${palaceDisplay(topicPalace)}与流年命宫的关系见下）。`);
 
-  const stars = majorStars(lnPalace);
+  const stars = majorStars(chart, lnPalace);
   if (stars.length) {
     lines.push(`流年命宫主星：${stars.map(s => `${s.name}（${brightnessGroup(s.brightness)}）`).join('、')}。` + stars.map(s => STAR_PROFILES[s.name]?.palaces[palaceKey(lnPalace)].core ?? '').join(' '));
   }
@@ -256,7 +273,7 @@ export function generateTopicReading(
     return empty;
   }
 
-  const majors = majorStars(palace);
+  const majors = majorStars(chart, palace);
   const starNames = majors.map(m => m.name);
 
   // ── 1. 定性 ──
@@ -289,18 +306,18 @@ export function generateTopicReading(
   sections.push({ title: '主星解读', body: starLines.join('\n') });
 
   // ── 3. 四化 ──
-  const huaLines = palaceSihuaLines(palace, '生年');
+  const huaLines = palaceSihuaLines(chart, palace, '生年');
   sections.push({
     title: '四化',
     body: huaLines.length
-      ? huaLines.join('\n')
+      ? (palace.isEmpty ? '本宫空宫，四化随借星照入：\n' : '') + huaLines.join('\n')
       : `本宫无生年四化星入驻，此领域靠宫干${STEMS[palace.stem]}的气流动，四化在别宫，主线不在这里。`,
   });
 
   // ── 4. 辅星与煞星 ──
   const auxLines: string[] = [];
   for (const s of palace.stars) {
-    if (s.type === 'major') continue;
+    
     const t = getAuxText(s.name, key);
     if (t) auxLines.push(`${s.name}入${palaceDisplay(palace)}：${t}`);
   }
@@ -315,10 +332,10 @@ export function generateTopicReading(
   const relLines: string[] = [];
   for (const rp of relPalaces) {
     const isOpposite = rp.branch === (palace.branch + 6) % 12;
-    const stars = majorStars(rp);
+    const stars = majorStars(chart, rp);
     const names = stars.map(s => s.name).join('、') || '空宫';
     const text = stars.map(s => STAR_PROFILES[s.name]?.palaces[palaceKey(rp)]?.core ?? '').join(' ');
-    const hua = palaceSihuaLines(rp, '生年');
+    const hua = palaceSihuaLines(chart, rp, '生年');
     relLines.push(
       `${isOpposite ? '对宫' : '三合'}【${palaceDisplay(rp)}】（${names}）：${text}${hua.length ? ' ' + hua.join(' ') : ''}`,
     );

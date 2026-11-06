@@ -72,6 +72,20 @@ function WorkspaceInner() {
   // 分享链接 / URL 参数自动起盘
   useEffect(() => {
     const p = new URLSearchParams(params.toString());
+    // sh = 时辰地支索引（0–11），数据集与名人盘用这个口径，直接按索引起盘，不做晚子时换日
+    const shRaw = p.get('sh');
+    if (shRaw !== null && p.get('y') && p.get('m') && p.get('d')) {
+      openChart({
+        year: parseInt(p.get('y')!), month: parseInt(p.get('m')!), day: parseInt(p.get('d')!),
+        hour: parseInt(shRaw),
+        gender: p.get('g') === 'f' ? 'female' : 'male',
+        name: p.get('n') || undefined,
+        province: p.get('p') || undefined,
+        city: p.get('c') || undefined,
+        longitude: p.get('lo') ? parseFloat(p.get('lo')!) : undefined,
+      } as BirthInfo);
+      return;
+    }
     const form = searchParamsToForm(p);
     if (!form) return;
     const info = formToBirthInfo({

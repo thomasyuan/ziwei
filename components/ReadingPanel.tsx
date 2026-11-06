@@ -63,7 +63,7 @@ export default function ReadingPanel({ readings, activeTopic, onTopicChange, liu
             );
           })}
         </div>
-        <div className="mt-2 flex items-center gap-3 text-[11px]" style={{ color: 'var(--tx-3)' }}>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]" style={{ color: 'var(--tx-3)' }}>
           <span>流年年份</span>
           <input
             type="number"
@@ -73,9 +73,15 @@ export default function ReadingPanel({ readings, activeTopic, onTopicChange, liu
               if (y >= 1900 && y <= 2100) onYearChange(y);
             }}
             className="input-base"
-            style={{ width: '88px', padding: '4px 8px', fontSize: '12px' }}
+            style={{ width: '84px', padding: '4px 8px', fontSize: '12px' }}
           />
-          <span>虚岁 {liunianYear > 0 ? '（按农历年换算）' : ''}</span>
+          {[-3, -1, 1, 3].map(d => (
+            <button key={d} onClick={() => onYearChange(liunianYear + d)}
+              className="rounded px-2 py-0.5" style={{ border: '1px solid var(--bdr-med)', color: 'var(--tx-2)', background: 'transparent', cursor: 'pointer' }}>
+              {d > 0 ? `+${d}` : d}
+            </button>
+          ))}
+          <span>流年四化与当年虚岁的解读会随年份重算</span>
         </div>
       </div>
 
