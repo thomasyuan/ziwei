@@ -435,7 +435,7 @@ body {
 [data-theme="dark"] select { color-scheme: dark; }
 [data-theme="dark"] select option { background-color: var(--bg-2); color: var(--tx-1); }
 
-/* ─── 命盘组件专用 Token（开源 Demo 里的 ChartBoard / PalaceCell / InsightPanel 用） ───
+/* ─── 命盘组件专用 Token（开源 Demo 里的 ChartBoard / PalaceCell / TimeNav 用） ───
    仓库原版把这套 token 定义在商业版样式里，本仓库的 globals.css 没有；
    这里补齐，暗色=墨金蓝底，亮色=宣纸暖底。 */
 :root {

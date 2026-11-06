@@ -11,8 +11,8 @@ interface Props {
   chart: ZiweiChart;
   topic: TopicKey;
   palaceName?: string;
-  /** 规则解读摘要，作为 AI 的追问上下文 */
-  context?: string;
+  /** 大限索引（null = 当前大限） */
+  dxIndex?: number;
 }
 
 const QUICK: { topic: TopicKey; q: string }[] = [
@@ -54,7 +54,7 @@ function RichText({ text, streaming }: { text: string; streaming?: boolean }) {
   );
 }
 
-export default function AiPanel({ chart, topic, palaceName, context }: Props) {
+export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -81,7 +81,7 @@ export default function AiPanel({ chart, topic, palaceName, context }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chart, messages: history, topic,
-          palaceName,
+          palaceName, dxIndex,
           // 把当前主题的规则解读一并交给模型（服务端会重新生成，这里只作提示）
         }),
       });

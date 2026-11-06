@@ -35,17 +35,18 @@ function WorkspaceInner() {
   const [view, setView] = useState<'mingpan' | 'daxian' | 'liunian'>('mingpan');
   const [year, setYear] = useState(new Date().getFullYear());
   const [topic, setTopic] = useState<TopicKey>('overview');
+  const [dxIndex, setDxIndex] = useState<number | null>(null);
   const [palace, setPalace] = useState<Palace | null>(null);
   const [starDetail, setStarDetail] = useState<{ star: Star; palace: Palace } | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
 
-  const fetchReadings = useCallback(async (c: ZiweiChart, y: number) => {
+  const fetchReadings = useCallback(async (c: ZiweiChart, y: number, dx?: number | null) => {
     setLoading(true);
     try {
       const res = await fetch('/api/reading', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chart: c, year: y }),
+        body: JSON.stringify({ chart: c, year: y, dxIndex: dx ?? undefined }),
       });
       const j = await res.json();
       if (Array.isArray(j.readings)) {
@@ -100,10 +101,17 @@ function WorkspaceInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 大限选择变化 → 重新生成大限段
+  useEffect(() => {
+    if (!chart || dxIndex === null) return;
+    void fetchReadings(chart, year, dxIndex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dxIndex]);
+
   // 年份变化 → 重新生成流年解读（防抖）
   useEffect(() => {
     if (!chart) return;
-    const t = setTimeout(() => void fetchReadings(chart, year), 300);
+    const t = setTimeout(() => void fetchReadings(chart, year, dxIndex), 300);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year]);
@@ -118,8 +126,10 @@ function WorkspaceInner() {
     if (!chart) return '';
     const b = chart.birthInfo;
     const p = new URLSearchParams({
+      // sh = 时辰地支索引（0–11）。用 sh 才能在分享链上原样复现这张盘：
+      // 排盘日已经过晚子时换日修正，h（钟表小时）会被重新校正一次，导致日期漂移一天。
       y: String(b.year), m: String(b.month), d: String(b.day),
-      h: String(b.hour), g: b.gender === 'male' ? 'm' : 'f',
+      sh: String(b.hour), g: b.gender === 'male' ? 'm' : 'f',
     });
     if (b.name) p.set('n', b.name);
     if (b.province) p.set('p', b.province);
@@ -218,9 +228,15 @@ function WorkspaceInner() {
             liunianYear={year}
             onYearChange={setYear}
             loading={loading}
+            dxIndex={dxIndex ?? chart.currentDaXianIndex}
+            onDxChange={setDxIndex}
+            daxianOptions={[
+              { label: `自动（当前 ${chart.daXians[chart.currentDaXianIndex]?.startAge ?? '?'}–${chart.daXians[chart.currentDaXianIndex]?.endAge ?? '?'}）`, index: chart.currentDaXianIndex },
+              ...chart.daXians.map((d, i) => ({ label: `${d.startAge}–${d.endAge} ${d.palaceName}`, index: i })),
+            ]}
           />
 
-          <AiPanel chart={chart} topic={topic} palaceName={palace?.name} />
+          <AiPanel chart={chart} topic={topic} palaceName={palace?.name} dxIndex={dxIndex ?? chart.currentDaXianIndex} />
 
           <PatternsCard chart={chart} />
           <ChartSummary chart={chart} />

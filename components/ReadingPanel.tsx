@@ -20,6 +20,10 @@ interface Props {
   liunianYear: number;
   onYearChange: (y: number) => void;
   loading: boolean;
+  /** 大限选择器：[标签, 大限索引][]，索引 -99 表示「当前大限」 */
+  daxianOptions?: { label: string; index: number }[];
+  dxIndex: number;
+  onDxChange: (i: number) => void;
 }
 
 function RichText({ text }: { text: string }) {
@@ -35,7 +39,7 @@ function RichText({ text }: { text: string }) {
 
 const LEVEL_LABEL: Record<string, string> = { excellent: '上格', good: '中格', neutral: '平格', caution: '需防' };
 
-export default function ReadingPanel({ readings, activeTopic, onTopicChange, liunianYear, onYearChange, loading }: Props) {
+export default function ReadingPanel({ readings, activeTopic, onTopicChange, liunianYear, onYearChange, loading, daxianOptions, dxIndex, onDxChange }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const reading = readings.find(r => r.topic === activeTopic) ?? readings[0];
 
@@ -83,6 +87,26 @@ export default function ReadingPanel({ readings, activeTopic, onTopicChange, liu
           ))}
           <span>流年四化与当年虚岁的解读会随年份重算</span>
         </div>
+        {daxianOptions && daxianOptions.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+            <span style={{ color: 'var(--tx-3)' }}>大限</span>
+            {daxianOptions.map(o => (
+              <button
+                key={o.index}
+                onClick={() => onDxChange(o.index)}
+                className="rounded-full px-2.5 py-1"
+                style={{
+                  border: `1px solid ${dxIndex === o.index ? 'var(--ac-bdr)' : 'var(--bdr-med)'}`,
+                  background: dxIndex === o.index ? 'var(--ac-bg)' : 'transparent',
+                  color: dxIndex === o.index ? 'var(--ac)' : 'var(--tx-2)',
+                  cursor: 'pointer', whiteSpace: 'nowrap',
+                }}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 内容 */}

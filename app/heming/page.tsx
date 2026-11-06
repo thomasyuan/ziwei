@@ -9,7 +9,7 @@ import { generateChart as buildChart } from '@/lib/ziwei/algorithm';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 import { useTheme } from '@/components/ThemeProvider';
 
-// ─── AiContent 渲染器（与 InsightPanel 一致）────────────────
+// ─── AiContent 渲染器（【标题】分段 + **加粗**，与排盘页的解读面板一致）────────
 function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
   const lines = text.split('\n');
   return (

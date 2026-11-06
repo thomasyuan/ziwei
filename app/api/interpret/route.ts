@@ -16,7 +16,7 @@ import { ALL_TOPICS, type TopicKey } from '@/lib/interpret/types';
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  let body: { chart?: ZiweiChart; messages?: { role: 'user' | 'assistant'; content: string }[]; topic?: string; palaceName?: string };
+  let body: { chart?: ZiweiChart; messages?: { role: 'user' | 'assistant'; content: string }[]; topic?: string; palaceName?: string; dxIndex?: number };
   try {
     body = await req.json();
   } catch {
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   let reading = '';
   try {
     const patterns = detectPatterns(chart);
-    reading = generateTopicReading(chart, topic, { patterns }).markdown;
+    reading = generateTopicReading(chart, topic, { patterns, dxIndex: body.dxIndex }).markdown;
     // 只保留与当前问题最相关的部分，控制 prompt 体积
     if (messages.length > 2) reading = reading.split('\n\n').slice(0, 4).join('\n\n');
   } catch { /* 规则解读失败不阻断 AI */ }
