@@ -28,3 +28,7 @@ standalone.log
 .pptr-profile
 .pptr-profile2
 .dbg.mjs
+
+.darkcheck.mjs
+.darkprofile
+.pptr-profile3
