@@ -222,7 +222,7 @@ export default function StarDetailPanel({ star, palaceName, onClose }: StarDetai
                   <div key={tag} className="text-[10px] px-2 py-1 rounded-full"
                     style={{
                       border: '1px solid var(--t-border)',
-                      color: tag.includes('庙旺') ? '#eab308' : tag.includes('落陷') ? '#ef4444' : 'var(--t-text2)',
+                      color: tag.includes('庙旺') ? 'var(--ke)' : tag.includes('落陷') ? 'var(--ji)' : 'var(--t-text2)',
                     }}>
                     {tag}
                   </div>

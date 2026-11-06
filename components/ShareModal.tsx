@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTheme } from './ThemeProvider';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import ShareCardCanvas, { captureShareCard, downloadDataURL } from './ShareCardCanvas';
@@ -15,6 +16,12 @@ interface ShareModalProps {
 }
 
 export default function ShareModal({ open, onClose, shareUrl, chart, birth, highlight }: ShareModalProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const panelBg = isDark ? 'rgba(255,255,255,0.06)' : 'white';
+  const textHi = isDark ? '#E8EEF6' : '#3d2f10';
+  const textMid = isDark ? '#97A7C2' : '#666';
+  const textSoft = isDark ? '#6B7B96' : '#a89b7c';
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
@@ -67,7 +74,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
             onClick={e => e.stopPropagation()}
             className="rounded-2xl overflow-hidden"
             style={{
-              background: 'white',
+              background: panelBg,
               maxWidth: '680px',
               width: '100%',
               maxHeight: '92vh',
@@ -81,26 +88,27 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               borderBottom: '1px solid rgba(184,146,42,0.15)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#3d2f10', letterSpacing: '0.12em' }}>
+              <div style={{ fontSize: '14px', fontWeight: 600, color: textHi, letterSpacing: '0.12em' }}>
                 ✦ 分享命盘
               </div>
               <button onClick={onClose}
                 style={{
                   width: '28px', height: '28px', borderRadius: '50%', border: 'none',
-                  background: 'rgba(0,0,0,0.05)', color: '#666', fontSize: '16px',
+                  background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)', color: textMid, fontSize: '16px',
                   cursor: 'pointer', lineHeight: 1,
                 }}
               >×</button>
             </div>
 
             {/* 卡片图预览（实际渲染） */}
+            {/* 卡片预览保持纸质浅色（导出图就是这一版），面板其余部分跟随主题 */}
             <div style={{ padding: '20px', background: '#fbf6e8', display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
               {chart && (
                 <ShareCardCanvas chart={chart} birth={birth} highlight={highlight} />
               )}
             </div>
 
-            <div style={{ padding: '0 20px 12px', textAlign: 'center', fontSize: '11px', color: '#a89b7c', letterSpacing: '0.05em' }}>
+            <div style={{ padding: '0 20px 12px', textAlign: 'center', fontSize: '11px', color: textSoft, letterSpacing: '0.05em' }}>
               ↑ 朋友圈 / 微信 / 抖音 / 小红书 都能用
             </div>
 
@@ -122,7 +130,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               <button onClick={copyLink}
                 style={{
                   padding: '14px', borderRadius: '10px',
-                  border: '1px solid rgba(184,146,42,0.4)', background: 'white',
+                  border: '1px solid rgba(184,146,42,0.4)', background: panelBg,
                   color: '#b8922a', fontSize: '14px', fontWeight: 500, letterSpacing: '0.12em',
                   cursor: 'pointer',
                 }}
@@ -131,11 +139,11 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               </button>
 
               <div style={{
-                fontSize: '11px', color: '#a89b7c', lineHeight: 1.7,
-                padding: '10px 12px', background: 'rgba(184,146,42,0.05)',
+                fontSize: '11px', color: textSoft, lineHeight: 1.7,
+                padding: '10px 12px', background: isDark ? 'rgba(184,146,42,0.10)' : 'rgba(184,146,42,0.05)',
                 borderRadius: '8px', marginTop: '4px',
               }}>
-                <div style={{ marginBottom: '4px', fontWeight: 600, color: '#8b6a14' }}>使用提示：</div>
+                <div style={{ marginBottom: '4px', fontWeight: 600, color: isDark ? '#d4a843' : '#8b6a14' }}>使用提示：</div>
                 · 下载图片可发朋友圈 / 抖音 / 小红书<br />
                 · 复制链接发给微信好友，对方点开看自己的盘起点
               </div>

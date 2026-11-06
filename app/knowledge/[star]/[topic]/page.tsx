@@ -299,7 +299,7 @@ function Section({ title, children, gradient, minimal }: { title: string; childr
       <div style={{
         background: gradient
           ? 'linear-gradient(135deg, rgba(212,169,72,0.12) 0%, rgba(184,146,42,0.04) 100%)'
-          : 'white',
+          : 'var(--bg-card)',
         border: '1px solid rgba(184,146,42,0.15)',
         borderRadius: '10px',
         padding: minimal ? '14px 18px' : '20px 22px',

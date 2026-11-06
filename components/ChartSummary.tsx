@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
 import { detectPatterns, getMingGongSummary } from '@/lib/ziwei/patterns';
+import { useTheme } from './ThemeProvider';
 
 interface ChartSummaryProps {
   chart: ZiweiChart;
@@ -16,6 +17,8 @@ const PatternLevelStyle = {
 };
 
 export default function ChartSummary({ chart }: ChartSummaryProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const patterns = detectPatterns(chart);
   const { stars: mingStars, keywords, nature } = getMingGongSummary(chart);
   const currentDx = chart.daXians[chart.currentDaXianIndex];
@@ -124,10 +127,11 @@ export default function ChartSummary({ chart }: ChartSummaryProps) {
           <div className="grid grid-cols-2 gap-2">
             {siHuaSummary.map(({ name, siHua, palaceName }) => {
               const colors: Record<string, { text: string; bg: string; border: string }> = {
-                '禄': { text: '#4ade80', bg: 'rgba(74,222,128,0.06)', border: 'rgba(74,222,128,0.2)' },
-                '权': { text: '#60a5fa', bg: 'rgba(96,165,250,0.06)', border: 'rgba(96,165,250,0.2)' },
-                '科': { text: '#facc15', bg: 'rgba(250,204,21,0.06)', border: 'rgba(250,204,21,0.2)' },
-                '忌': { text: '#f87171', bg: 'rgba(248,113,113,0.06)', border: 'rgba(248,113,113,0.2)' },
+                // 四化语义色走 token（亮色/暗色各自调过对比度）
+                '禄': { text: 'var(--lu)',   bg: 'rgba(45,122,74,0.08)',  border: 'rgba(45,122,74,0.22)' },
+                '权': { text: 'var(--quan)', bg: 'rgba(26,86,168,0.08)',  border: 'rgba(26,86,168,0.22)' },
+                '科': { text: 'var(--ke)',   bg: 'rgba(138,112,24,0.08)', border: 'rgba(138,112,24,0.22)' },
+                '忌': { text: 'var(--ji)',   bg: 'rgba(168,50,40,0.08)',  border: 'rgba(168,50,40,0.22)' },
               };
               const c = colors[siHua] || colors['禄'];
               return (
@@ -249,7 +253,7 @@ export default function ChartSummary({ chart }: ChartSummaryProps) {
                     ? '1px solid rgba(147,51,234,0.4)'
                     : '1px solid var(--t-border)',
                   background: isCurrent ? 'rgba(147,51,234,0.08)' : 'transparent',
-                  color: isCurrent ? '#a78bfa' : 'var(--t-faint)',
+                  color: isCurrent ? (isDark ? '#a78bfa' : '#7c3aed') : 'var(--t-faint)',
                 }}
               >
                 <div className="font-mono tabular-nums">{dx.startAge}~{dx.endAge}</div>

@@ -30,11 +30,12 @@ export function buildSiHuaOverlay(stemIndex: number): Record<string, string> {
   };
 }
 
+// 四化色用设计 token：亮色下深绿/深蓝/深金/深红，暗色下与盘面对比足够
 const SIHUA_COLORS: Record<string, string> = {
-  '禄': '#4ade80',
-  '权': '#60a5fa',
-  '科': '#facc15',
-  '忌': '#f87171',
+  '禄': 'var(--lu)',
+  '权': 'var(--quan)',
+  '科': 'var(--ke)',
+  '忌': 'var(--ji)',
 };
 
 export default function TimeNav({
