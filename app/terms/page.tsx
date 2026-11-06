@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export const metadata = {
@@ -9,7 +8,6 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <>
-      <Header />
       <main className="mx-auto max-w-[820px] px-4 sm:px-6 py-16" style={{ color: 'var(--tx-1)', lineHeight: 1.85 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>服务条款</h1>
         <p style={{ fontSize: 12, color: 'var(--tx-3)', marginBottom: 28 }}>本站为自建站点 · 生效日期：部署当日</p>

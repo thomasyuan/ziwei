@@ -5,7 +5,6 @@
  */
 
 import Link from 'next/link';
-import Header from '@/components/Header';
 import { ALL_BOOKS, TOTAL_PARAGRAPHS } from '@/lib/classics';
 import LibrarySearch from './LibrarySearch';
 
@@ -17,8 +16,6 @@ export const metadata = {
 export default function LibraryHomePage() {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <Header />
-
       {/* Hero */}
       <div className="text-center px-6 py-16">
         <div className="flex items-center justify-center gap-3 mb-4">

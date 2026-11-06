@@ -4,7 +4,6 @@
  */
 
 import Link from 'next/link';
-import Header from '@/components/Header';
 import { ALL_STARS, ALL_TOPICS, getKnowledge, STAR_BRIEF_SEO, STAR_TO_SLUG } from '@/lib/seo/knowledge';
 import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
 
@@ -19,8 +18,6 @@ export default function KnowledgeHomePage() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <Header />
-
       {/* Hero */}
       <div className="text-center px-6 py-14">
         <div className="flex items-center justify-center gap-3 mb-4">

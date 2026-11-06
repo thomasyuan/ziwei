@@ -2,7 +2,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import BirthForm, { type BirthFormState } from '@/components/BirthForm';
-import Header from '@/components/Header';
 import ChartBoard from '@/components/ChartBoard';
 import { formToBirthInfo } from '@/lib/ziwei/share';
 import { generateChart as buildChart } from '@/lib/ziwei/algorithm';
@@ -173,8 +172,6 @@ export default function HemingPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-0)' }}>
-      <Header />
-
       {/* 主体 */}
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 80px' }}>
 

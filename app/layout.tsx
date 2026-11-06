@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import Header from '@/components/Header';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site';
@@ -45,6 +46,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen">
         <ThemeProvider>
+          {/* 导航与主题切换在 RootLayout 里，所有页面（含 /chart、古籍子页）都用同一条 header */}
+          <Header />
           {children}
         </ThemeProvider>
         <Analytics />

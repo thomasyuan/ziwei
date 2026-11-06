@@ -9,7 +9,6 @@ import ReadingPanel, { type ReadingData } from '@/components/ReadingPanel';
 import AiPanel from '@/components/AiPanel';
 import PatternsCard from '@/components/PatternsCard';
 import StarDetailPanel from '@/components/StarDetailPanel';
-import Header from '@/components/Header';
 import ShareModal from '@/components/ShareModal';
 import { formToBirthInfo, formToSearchParams, searchParamsToForm } from '@/lib/ziwei/share';
 import { generateChart } from '@/lib/ziwei/algorithm';
@@ -139,7 +138,6 @@ function WorkspaceInner() {
   if (!chart) {
     return (
       <main className="mx-auto max-w-[760px] px-4 py-12">
-        <Header />
         <div className="text-center mb-8">
           <div className="text-[10px] tracking-[0.5em]" style={{ color: 'var(--ac)' }}>ZI WEI DOU SHU</div>
           <h1 className="mt-3 text-[28px] font-bold" style={{ color: 'var(--tx-0)', letterSpacing: '0.08em' }}>
@@ -160,7 +158,6 @@ function WorkspaceInner() {
 
   return (
     <main className="mx-auto max-w-[1240px] px-3 sm:px-6 py-6">
-      <Header />
       {/* 顶部操作条 */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">

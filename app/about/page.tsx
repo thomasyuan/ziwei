@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ALL_BOOKS, TOTAL_PARAGRAPHS } from '@/lib/classics';
 import { ALL_STARS } from '@/lib/seo/knowledge';
@@ -13,7 +12,6 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <>
-      <Header />
       <main className="mx-auto max-w-[880px] px-4 sm:px-6 py-16">
         <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--tx-0)', marginBottom: '6px' }}>关于本站</h1>
         <p style={{ fontSize: 12, color: 'var(--tx-3)', marginBottom: '28px' }}>自建紫微斗数排盘与解读站点</p>

@@ -13,7 +13,6 @@
  */
 
 import Link from 'next/link';
-import Header from '@/components/Header';
 import { notFound } from 'next/navigation';
 import type { TopicKey } from '@/lib/ziwei/db-analysis';
 import {
@@ -102,8 +101,6 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      <Header />
 
       <article className="max-w-3xl mx-auto px-6 py-12">
         {/* 面包屑 */}

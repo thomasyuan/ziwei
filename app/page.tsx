@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, useInView } from 'framer-motion';
 import StarField from '@/components/StarField';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ALL_STARS, STAR_TO_SLUG } from '@/lib/seo/slugs';
 import { ALL_BOOKS, TOTAL_PARAGRAPHS } from '@/lib/classics';
@@ -96,8 +95,6 @@ export default function Home() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <Header />
-
       {/* ── Hero ── */}
       <div className="relative overflow-hidden">
         <StarField />

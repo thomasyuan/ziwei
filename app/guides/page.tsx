@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SI_HUA_TABLE, STEMS, BRANCHES, SHICHEN, PALACE_NAMES_ORDER } from '@/lib/ziwei/constants';
 
@@ -29,8 +28,6 @@ const PRACTICE = [
 export default function GuidesPage() {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <Header />
-
       <div className="mx-auto max-w-[900px] px-4 sm:px-6 pt-14 pb-6 text-center">
         <div style={{ fontSize: '11px', letterSpacing: '0.45em', color: 'var(--ac)', marginBottom: '14px' }}>BEGINNER GUIDE</div>
         <h1 style={{ fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
