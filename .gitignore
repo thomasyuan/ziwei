@@ -36,3 +36,5 @@ standalone.log
 .dev.log
 .sa.log
 .pptr-header
+
+.pptr-*
