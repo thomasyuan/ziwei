@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer-core';
-const BASE='http://127.0.0.1:3996', BP='/ziwei';
+const BASE=process.argv[2] ?? 'http://127.0.0.1:3996', BP=process.argv[3] ?? '/ziwei';
 const b=await puppeteer.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:'new',userDataDir:'./.pptr-scroll'});
 const p=await b.newPage();
 await p.setViewport({width:1280,height:900});
