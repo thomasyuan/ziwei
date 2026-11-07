@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, useInView } from 'framer-motion';
 import StarField from '@/components/StarField';
-import Footer from '@/components/Footer';
 import { ALL_STARS, STAR_TO_SLUG } from '@/lib/seo/slugs';
 import { ALL_BOOKS, TOTAL_PARAGRAPHS } from '@/lib/classics';
 import { SHICHEN } from '@/lib/ziwei/constants';
@@ -100,8 +99,10 @@ export default function Home() {
         <StarField />
         <div className="relative z-10 mx-auto max-w-[1180px] px-4 sm:px-6 pt-20 pb-16 text-center">
           <FadeIn>
-            <div style={{ fontSize: '11px', letterSpacing: '0.5em', color: 'var(--ac)', marginBottom: '18px' }}>
-              ZI WEI DOU SHU · 紫微斗数
+            <div className="flex items-center justify-center gap-3" style={{ marginBottom: '18px' }}>
+              <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, rgba(184,146,42,0.45))' }} />
+              <span style={{ fontSize: '11px', letterSpacing: '0.42em', color: 'var(--ac)' }}>ZI WEI DOU SHU</span>
+              <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to left, transparent, rgba(184,146,42,0.45))' }} />
             </div>
             <h1 style={{
               fontSize: 'clamp(30px, 6vw, 56px)', fontWeight: 700, color: 'var(--tx-0)',
@@ -282,7 +283,6 @@ export default function Home() {
         </FadeIn>
       </div>
 
-      <Footer />
     </div>
   );
 }

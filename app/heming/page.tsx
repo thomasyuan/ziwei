@@ -8,6 +8,7 @@ import { generateChart as buildChart } from '@/lib/ziwei/algorithm';
 import { analyzeHeming } from '@/lib/interpret/heming';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 import { useTheme } from '@/components/ThemeProvider';
+import SectionHead from '@/components/SectionHead';
 
 // ─── AiContent 渲染器（【标题】分段 + **加粗**，与排盘页的解读面板一致）────────
 function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
@@ -171,20 +172,16 @@ export default function HemingPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-0)' }}>
+    <div style={{ minHeight: '100vh' }}>
       {/* 主体 */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px 80px' }}>
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 24px 80px' }}>
 
-        {/* 标题 */}
-        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ fontSize: '28px', color: 'var(--ac)', opacity: 0.15, marginBottom: '12px' }}>☯</div>
-          <h1 style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '0.15em', color: 'var(--tx-0)', marginBottom: '8px' }}>
-            紫微合盘
-          </h1>
-          <p style={{ fontSize: '13px', color: 'var(--tx-3)', lineHeight: 1.6 }}>
-            输入两人出生信息：先用规则引擎算出双盘联参结论（夫妻宫互参、四化互落、命宫合冲、福德田宅），再接大模型做自由问答；适用于感情、亲缘、合伙与朋友关系
-          </p>
-        </div>
+        {/* 标题（与全站章节头同一套：细线 + eyebrow + 同款字号） */}
+        <SectionHead
+          eyebrow="HEMING ANALYSIS"
+          title="紫微合盘"
+          desc="输入两人出生信息：先用规则引擎算出双盘联参结论（夫妻宫互参、四化互落、命宫合冲、福德田宅），再接大模型做自由问答；适用于感情、亲缘、合伙与朋友关系。"
+        />
 
         {/* 双栏表单 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}

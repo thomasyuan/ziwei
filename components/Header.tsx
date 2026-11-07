@@ -10,6 +10,7 @@ const NAV = [
   { href: '/patterns', label: '格局' },
   { href: '/library', label: '古籍' },
   { href: '/famous', label: '名人盘' },
+  { href: '/guides', label: '指南' },
 ];
 
 export default function Header() {

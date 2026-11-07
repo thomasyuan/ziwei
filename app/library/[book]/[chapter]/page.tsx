@@ -5,6 +5,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ALL_BOOKS, getChapter } from '@/lib/classics';
+import SectionHead from '@/components/SectionHead';
 
 export async function generateStaticParams() {
   return ALL_BOOKS.flatMap(b =>
@@ -33,7 +34,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ book: 
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="px-6 py-4 flex items-center justify-between"
+      <div className="px-6 py-2 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
         <Link href={`/library/${book.slug}`} style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
           ← 《{book.title}》目录
@@ -46,21 +47,13 @@ export default async function ChapterPage({ params }: { params: Promise<{ book: 
         </Link>
       </div>
 
-      <article className="max-w-3xl mx-auto px-6 py-12">
-        {/* 标题 */}
-        <div className="text-center mb-10">
-          <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.25em', marginBottom: '8px' }}>
-            《{book.title}》· {book.dynasty}
-          </div>
-          <h1 style={{ fontSize: 'clamp(24px, 3.5vw, 36px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '8px' }}>
-            {chapter.title}
-          </h1>
-          {chapter.subtitle && (
-            <div style={{ fontSize: '13px', color: 'var(--tx-2)', letterSpacing: '0.1em' }}>
-              {chapter.subtitle}
-            </div>
-          )}
-        </div>
+      <article className="max-w-3xl mx-auto px-6 pt-0 pb-12">
+        <SectionHead
+          eyebrow="CHAPTER"
+          title={chapter.title}
+          topPad={12}
+          desc={`《${book.title}》· ${book.dynasty}${chapter.subtitle ? ' — ' + chapter.subtitle : ''}`}
+        />
 
         {/* 段落 */}
         <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid rgba(184,146,42,0.2)', padding: '32px 28px' }}>

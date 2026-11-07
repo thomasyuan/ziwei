@@ -16,6 +16,7 @@ import { TOPIC_PALACE, PALACE_NAME_TO_KEY, type TopicKey } from '@/lib/interpret
 import { STAR_TO_SLUG } from '@/lib/seo/slugs';
 import type { BirthInfo, ZiweiChart, Palace, Star } from '@/lib/ziwei/types';
 import type { Pattern } from '@/lib/ziwei/patterns';
+import SectionHead from '@/components/SectionHead';
 
 const TOPIC_BY_PALACE_KEY: Record<string, TopicKey> = (() => {
   const m: Record<string, TopicKey> = {};
@@ -137,17 +138,12 @@ function WorkspaceInner() {
 
   if (!chart) {
     return (
-      <main className="mx-auto max-w-[760px] px-4 py-12">
-        <div className="text-center mb-8">
-          <div className="text-[10px] tracking-[0.5em]" style={{ color: 'var(--ac)' }}>ZI WEI DOU SHU</div>
-          <h1 className="mt-3 text-[28px] font-bold" style={{ color: 'var(--tx-0)', letterSpacing: '0.08em' }}>
-            紫微斗数排盘
-          </h1>
-          <p className="mt-3 text-[13px] leading-relaxed" style={{ color: 'var(--tx-2)', maxWidth: '560px', margin: '0 auto' }}>
-            填入出生资料，即时生成完整命盘：十四主星、六吉六煞、四化与十二宫。
-            真太阳时按出生地经度校正，晚子时换日按真太阳时判定。
-          </p>
-        </div>
+      <main className="mx-auto max-w-[760px] px-4 pt-0 pb-12">
+        <SectionHead
+          eyebrow="CHART WORKSPACE"
+          title="紫微斗数排盘"
+          desc="填入出生资料，即时生成完整命盘：十四主星、六吉六煞、四化与十二宫。真太阳时按出生地经度校正，晚子时换日按真太阳时判定；13 维解读在浏览器内按本宫、四化、辅煞、三方四正、格局与运限生成。"
+        />
         <BirthForm onSubmit={openChart} />
         <p className="mt-6 text-[11px] leading-relaxed text-center" style={{ color: 'var(--tx-3)' }}>
           出生资料只用于起盘，不存储于服务端；AI 追问会把命盘摘要送到所配置的大模型接口。
@@ -157,8 +153,14 @@ function WorkspaceInner() {
   }
 
   return (
-    <main className="mx-auto max-w-[1240px] px-3 sm:px-6 py-6">
+    <main className="mx-auto max-w-[1240px] px-3 sm:px-6 pt-0 pb-6">
       {/* 顶部操作条 */}
+      <SectionHead
+        eyebrow="CHART WORKSPACE"
+        title={(chart.birthInfo.name || '命盘') + ' · 紫微斗数命盘'}
+        desc={`${chart.birthInfo.year} 年 ${chart.birthInfo.month} 月 ${chart.birthInfo.day} 日 · ${['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][chart.birthInfo.hour]}时 · ${chart.wuxingJuName} · ${chart.yinYangGender} · 命宫${['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][chart.mingGongBranch]}，身宫${['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][chart.shenGongBranch]}`}
+      />
+
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <button

@@ -1,5 +1,5 @@
-import Footer from '@/components/Footer';
 
+import SectionHead from '@/components/SectionHead';
 export const metadata = {
   title: '服务条款 · 紫微斗数排盘与研究',
   description: '本站服务条款：内容授权、使用边界、免责与开源许可（排盘引擎 MIT、论断内容 CC BY 4.0、古籍公版）。',
@@ -8,9 +8,13 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <>
-      <main className="mx-auto max-w-[820px] px-4 sm:px-6 py-16" style={{ color: 'var(--tx-1)', lineHeight: 1.85 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>服务条款</h1>
-        <p style={{ fontSize: 12, color: 'var(--tx-3)', marginBottom: 28 }}>本站为自建站点 · 生效日期：部署当日</p>
+      <main className="mx-auto max-w-[820px] px-4 sm:px-6 pt-0 pb-16" style={{ color: 'var(--tx-1)', lineHeight: 1.85 }}>
+        <SectionHead
+          eyebrow="TERMS OF SERVICE"
+          title="服务条款"
+          desc="生效日期：部署当日。服务内容、使用边界与授权见下文。"
+          topPad={46}
+        />
 
         <h2 style={{ fontSize: 17, marginTop: 26, marginBottom: 10 }}>1. 服务内容</h2>
         <p style={{ fontSize: 13 }}>
@@ -78,7 +82,6 @@ export default function TermsPage() {
           欢迎指出并附盘例（年月日时 + 性别 + 具体哪一条），我们会核对修正。
         </p>
       </main>
-      <Footer />
     </>
   );
 }

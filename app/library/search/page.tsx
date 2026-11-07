@@ -8,6 +8,7 @@ import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { SearchHit } from '@/lib/classics/types';
+import SectionHead from '@/components/SectionHead';
 
 function SearchInner() {
   const params = useSearchParams();
@@ -37,7 +38,7 @@ function SearchInner() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="px-6 py-4 flex items-center justify-between"
+      <div className="px-6 py-2 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
         <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
           ← 古籍库
@@ -48,17 +49,14 @@ function SearchInner() {
         </Link>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
+      <div className="max-w-3xl mx-auto px-6 pt-0 pb-12">
         <div className="text-center mb-10">
-          <div style={{ fontSize: '13px', color: 'var(--tx-3)', letterSpacing: '0.15em', marginBottom: '4px' }}>搜索关键词</div>
-          <h1 style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
-            「{q || '（空）'}」
-          </h1>
-          <div style={{ fontSize: '12px', color: 'var(--tx-3)', marginTop: '8px' }}>
-            {hits === null
-              ? '正在检索全文…'
-              : <>共找到 <strong style={{ color: 'var(--ac)' }}>{list.length}</strong> 条古籍原文匹配</>}
-          </div>
+          <SectionHead
+            eyebrow="SEARCH RESULTS"
+            title={`「${q || '（空）'}」`}
+            topPad={12}
+            desc={hits === null ? '正在检索全文…' : <>共找到 <strong style={{ color: 'var(--ac)' }}>{list.length}</strong> 条古籍原文匹配</>}
+          />
         </div>
 
         {list.length === 0 && (

@@ -5,6 +5,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ALL_BOOKS, getBookBySlug } from '@/lib/classics';
+import SectionHead from '@/components/SectionHead';
 
 export async function generateStaticParams() {
   return ALL_BOOKS.map(b => ({ book: b.slug }));
@@ -27,7 +28,7 @@ export default async function BookPage({ params }: { params: Promise<{ book: str
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="px-6 py-4 flex items-center justify-between"
+      <div className="px-6 py-2 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
         <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
           ← 古籍库
@@ -40,19 +41,13 @@ export default async function BookPage({ params }: { params: Promise<{ book: str
         </Link>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
-        {/* 书名信息 */}
-        <div className="text-center mb-12">
-          <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.3em', marginBottom: '8px' }}>
-            {book.dynasty} · {book.author}
-          </div>
-          <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '14px' }}>
-            《{book.title}》
-          </h1>
-          <p style={{ fontSize: '13px', color: 'var(--tx-2)', lineHeight: 1.8, maxWidth: '500px', margin: '0 auto' }}>
-            {book.intro}
-          </p>
-        </div>
+      <div className="max-w-3xl mx-auto px-6 pt-0 pb-12">
+        <SectionHead
+          eyebrow="CLASSICS LIBRARY"
+          title={`《${book.title}》`}
+          topPad={12}
+          desc={<>{book.dynasty} · {book.author}<br />{book.intro}</>}
+        />
 
         {/* 章节目录 */}
         <div style={{ background: 'var(--bg-card)', borderRadius: '14px', border: '1px solid rgba(184,146,42,0.2)', overflow: 'hidden' }}>

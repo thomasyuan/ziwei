@@ -1,5 +1,5 @@
-import Footer from '@/components/Footer';
 
+import SectionHead from '@/components/SectionHead';
 export const metadata = {
   title: '隐私政策 · 紫微斗数排盘与研究',
   description: '本站隐私政策：排盘数据只在起盘时使用，出生资料不存储于服务端；AI 追问会把命盘摘要送到所配置的大模型接口。',
@@ -8,9 +8,13 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <>
-      <main className="mx-auto max-w-[820px] px-4 sm:px-6 py-16" style={{ color: 'var(--tx-1)', lineHeight: 1.85 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>隐私政策</h1>
-        <p style={{ fontSize: 12, color: 'var(--tx-3)', marginBottom: 28 }}>本站为自建站点 · 生效日期：部署当日</p>
+      <main className="mx-auto max-w-[820px] px-4 sm:px-6 pt-0 pb-16" style={{ color: 'var(--tx-1)', lineHeight: 1.85 }}>
+        <SectionHead
+          eyebrow="PRIVACY POLICY"
+          title="隐私政策"
+          desc="生效日期：部署当日。本站无账号体系，排盘数据不入库。"
+          topPad={46}
+        />
 
         <h2 style={{ fontSize: 17, marginTop: 26, marginBottom: 10 }}>1. 排盘数据</h2>
         <p style={{ fontSize: 13 }}>
@@ -57,7 +61,6 @@ export default function PrivacyPage() {
           </p>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

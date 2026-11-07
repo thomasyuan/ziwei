@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import Footer from '@/components/Footer';
 import { FAMOUS_PERSONS, FAMOUS_CATEGORIES, getFamousByCategory } from '@/lib/ziwei/famous';
 import { SHICHEN } from '@/lib/ziwei/constants';
+import SectionHead from '@/components/SectionHead';
 
 export const metadata = {
   title: '名人紫微命盘 · 排盘对照 · 紫微斗数研究',
@@ -12,18 +12,12 @@ export const metadata = {
 export default function FamousPage() {
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="mx-auto max-w-[1180px] px-4 sm:px-6 pt-14 pb-8 text-center">
-        <div style={{ fontSize: '11px', letterSpacing: '0.45em', color: 'var(--ac)', marginBottom: '14px' }}>CASE CHARTS</div>
-        <h1 style={{ fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
-          名人命盘对照
-        </h1>
-        <p style={{ fontSize: '13px', color: 'var(--tx-2)', marginTop: '14px', lineHeight: 1.9, maxWidth: '720px', margin: '14px auto 0' }}>
-          全部按公开记录的出生日期起盘，时辰为估算（部分有文献记载）。
-          名人盘的真正价值不在「验证名人」，而在拿来做对照练习：看格局、看四化落宫、看大限与生平事件是否对得上。
-        </p>
-        <p style={{ fontSize: '11px', color: 'var(--tx-3)', marginTop: '10px', lineHeight: 1.8, maxWidth: '720px', margin: '10px auto 0' }}>
-          时辰是估算值，命盘结论只对盘本身负责，不作传记结论。
-        </p>
+      <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
+        <SectionHead
+          eyebrow="CASE CHARTS"
+          title="名人命盘对照"
+          desc={<>全部按公开记录的出生日期起盘，时辰为估算（部分有文献记载）。名人盘的真正价值不在「验证名人」，而在拿来做对照练习：看格局、看四化落宫、看大限与生平事件是否对得上。<br /><span style={{ color: 'var(--tx-3)', fontSize: '11px' }}>时辰是估算值，命盘结论只对盘本身负责，不作传记结论。</span></>}
+        />
       </div>
 
       <div className="mx-auto max-w-[1180px] px-4 sm:px-6 pb-20">
@@ -73,7 +67,6 @@ export default function FamousPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

@@ -6,8 +6,8 @@
  */
 
 import Link from 'next/link';
-import Footer from '@/components/Footer';
 import { PATTERN_CATALOG } from '@/lib/interpret/pattern-catalog';
+import SectionHead from '@/components/SectionHead';
 
 export const metadata = {
   title: '紫微斗数格局目录 · 70 种经典格局 · 紫微斗数研究',
@@ -28,20 +28,14 @@ export default function PatternsPage() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      <div className="mx-auto max-w-[1180px] px-4 sm:px-6 pt-14 pb-8 text-center">
-        <div style={{ fontSize: '11px', letterSpacing: '0.45em', color: 'var(--ac)', marginBottom: '14px' }}>PATTERN CATALOG</div>
-        <h1 style={{ fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
-          格局目录 · {PATTERN_CATALOG.length} 种
-        </h1>
-        <p style={{ fontSize: '13px', color: 'var(--tx-2)', marginTop: '14px', lineHeight: 1.9, maxWidth: '720px', margin: '14px auto 0' }}>
-          格局是星曜组合的命名。本目录由排盘引擎扫
-          <span style={{ color: 'var(--ac)' }}> 11,088 张真实命盘 </span>
-          收集而来，逐条给出成立条件、加分项、破格项与古籍出处；
-          你的命盘符合哪几格，可在排盘页查看，或在格局卡片里看命盘依据。
-        </p>
-        <div style={{ marginTop: '20px' }}>
+      <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
+        <SectionHead
+          eyebrow="PATTERN CATALOG"
+          title={`格局目录 · ${PATTERN_CATALOG.length} 种`}
+          desc={<>格局是星曜组合的命名。本目录由排盘引擎扫 <span style={{ color: 'var(--ac)' }}>11,088 张真实命盘</span> 收集而来，逐条给出成立条件、加分项、破格项与古籍出处；你的命盘符合哪几格，可在排盘页查看，或在格局卡片里看命盘依据。</>}
+        >
           <Link href="/chart" className="btn-accent">排盘看自己的格局</Link>
-        </div>
+        </SectionHead>
       </div>
 
       <div className="mx-auto max-w-[1180px] px-4 sm:px-6 pb-20">
@@ -114,7 +108,6 @@ export default function PatternsPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

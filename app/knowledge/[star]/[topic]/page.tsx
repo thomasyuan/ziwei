@@ -25,6 +25,7 @@ import {
   SLUG_TO_STAR,
 } from '@/lib/seo/knowledge';
 import { SITE_URL } from '@/lib/site';
+import SectionHead from '@/components/SectionHead';
 
 // 允许动态参数：如果某个 star/topic 组合不在 generateStaticParams 列表中
 // 也允许运行时按需渲染，避免中文 URL 编码问题导致 404
@@ -102,9 +103,9 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <article className="max-w-3xl mx-auto px-6 py-12">
+      <article className="max-w-3xl mx-auto px-6 pt-0 pb-12">
         {/* 面包屑 */}
-        <nav style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.1em', marginBottom: '16px' }}>
+        <nav style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.1em', marginBottom: '12px' }}>
           <Link href="/" style={{ color: 'var(--tx-3)', textDecoration: 'none' }}>首页</Link>
           <span style={{ margin: '0 8px' }}>/</span>
           <Link href="/knowledge" style={{ color: 'var(--tx-3)', textDecoration: 'none' }}>知识库</Link>
@@ -115,19 +116,12 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
         </nav>
 
         {/* 标题区 */}
-        <header style={{ marginBottom: '36px' }}>
-          <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.25em', marginBottom: '8px' }}>
-            {data.topicLabel} · 传统体系 · 本站论断库
-          </div>
-          <h1 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em', lineHeight: 1.2 }}>
-            {star}入{data.palaceName}宫
-          </h1>
-          {STAR_BRIEF_SEO[star] && (
-            <p style={{ fontSize: '13px', color: 'var(--tx-2)', marginTop: '14px', lineHeight: 1.8 }}>
-              {STAR_BRIEF_SEO[star]}
-            </p>
-          )}
-        </header>
+        <SectionHead
+          eyebrow="KNOWLEDGE BASE"
+          title={`${star}入${data.palaceName}宫`}
+          topPad={19}
+          desc={<>{data.topicLabel} · 传统体系 · 本站论断库{STAR_BRIEF_SEO[star] ? <><br />{STAR_BRIEF_SEO[star]}</> : null}</>}
+        />
 
         {/* 内容 4 段 */}
         {data.parsed.dingdiao && (
@@ -268,11 +262,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
         </div>
       </article>
 
-      {/* 页脚 */}
-      <footer style={{ borderTop: '1px solid rgba(184,146,42,0.15)', padding: '20px 24px', textAlign: 'center', fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.1em' }}>
-        <div style={{ marginBottom: '6px' }}>紫微研究 · 基于倪海厦正宗体系 · 仅供学习参考</div>
-        <div style={{ opacity: 0.85 }}>本平台不构成任何医疗、投资、法律或重大决策建议</div>
-      </footer>
+      {/* 页脚由 RootLayout 的全站 Footer 提供，本页不再自带 */}
     </div>
   );
 }

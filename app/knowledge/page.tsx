@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import { ALL_STARS, ALL_TOPICS, getKnowledge, STAR_BRIEF_SEO, STAR_TO_SLUG } from '@/lib/seo/knowledge';
 import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
+import SectionHead from '@/components/SectionHead';
 
 export const metadata = {
   title: '紫微斗数知识库 · 14 主星 × 13 宫位 · 倪海厦正宗体系',
@@ -18,20 +19,12 @@ export default function KnowledgeHomePage() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      {/* Hero */}
-      <div className="text-center px-6 py-14">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, rgba(184,146,42,0.4))' }} />
-          <span style={{ fontSize: '11px', color: 'var(--ac)', letterSpacing: '0.4em' }}>KNOWLEDGE BASE</span>
-          <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to left, transparent, rgba(184,146,42,0.4))' }} />
-        </div>
-        <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '12px' }}>
-          紫微斗数知识库
-        </h1>
-        <p style={{ fontSize: '14px', color: 'var(--tx-2)', letterSpacing: '0.08em', maxWidth: '600px', margin: '0 auto', lineHeight: 1.7 }}>
-          14 主星 × 13 宫位 = <strong style={{ color: 'var(--ac)' }}>{ALL_STARS.length * ALL_TOPICS.length}</strong> 项专题<br />
-          论断库为本站原创编纂 · 含公版古籍引证
-        </p>
+      <div className="mx-auto max-w-[1180px] px-4 sm:px-6">
+        <SectionHead
+          eyebrow="KNOWLEDGE BASE"
+          title="紫微斗数知识库"
+          desc={<>14 主星 × 13 主题 = <strong style={{ color: 'var(--ac)' }}>{ALL_STARS.length * ALL_TOPICS.length}</strong> 项论断；论断库为本站原创编纂，含公版古籍逐字引证。</>}
+        />
       </div>
 
       {/* 14 主星卡片 */}

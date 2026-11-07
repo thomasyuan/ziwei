@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import Footer from '@/components/Footer';
 import { ALL_BOOKS, TOTAL_PARAGRAPHS } from '@/lib/classics';
 import { ALL_STARS } from '@/lib/seo/knowledge';
 import { PATTERN_CATALOG } from '@/lib/interpret/pattern-catalog';
+import SectionHead from '@/components/SectionHead';
 
 export const metadata = {
   title: '关于本站 · 排盘引擎与论断库怎么建起来',
@@ -12,9 +12,13 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <>
-      <main className="mx-auto max-w-[880px] px-4 sm:px-6 py-16">
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--tx-0)', marginBottom: '6px' }}>关于本站</h1>
-        <p style={{ fontSize: 12, color: 'var(--tx-3)', marginBottom: '28px' }}>自建紫微斗数排盘与解读站点</p>
+      <main className="mx-auto max-w-[880px] px-4 sm:px-6 pt-0 pb-16">
+        <SectionHead
+          eyebrow="ABOUT THIS SITE"
+          title="关于本站"
+          desc="自建紫微斗数排盘与解读站点：开源安星引擎 + 本站论断库 + 13 维解读 + 合盘规则。"
+          topPad={46}
+        />
 
         <div className="card p-6">
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--tx-0)', marginBottom: '10px' }}>一 · 这个站做什么</div>
@@ -107,7 +111,6 @@ AI_API_KEY=...       # 不配 Key 时排盘与规则解读照常可用`}</pre>
           <Link href="/knowledge" className="btn-ghost">知识库</Link>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

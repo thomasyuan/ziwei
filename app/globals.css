@@ -103,12 +103,13 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-  background: var(--bg-0);
+  background: var(--bg-page);
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--bg-0);
+  /* 全站页面底色统一（各页容器不必再各自设 --bg-0 / --bg-page） */
+  background: var(--bg-page);
   color: var(--tx-1);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
