@@ -3,17 +3,18 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 export type Theme = 'dark' | 'light';
 
+/** 默认亮色（宣纸暖底）；用户切换后记在 localStorage，下次进入沿用 */
 const ThemeContext = createContext<{
   theme: Theme;
   toggle: () => void;
-}>({ theme: 'dark', toggle: () => {} });
+}>({ theme: 'light', toggle: () => {} });
 
 function getInitialTheme(): Theme {
   if (typeof document !== 'undefined') {
     const attr = document.documentElement.getAttribute('data-theme');
     if (attr === 'light' || attr === 'dark') return attr;
   }
-  return 'dark';
+  return 'light';
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

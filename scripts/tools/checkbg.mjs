@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer-core';
 const BASE=process.argv[2] ?? 'http://127.0.0.1:3996', BP=process.argv[3] ?? '/ziwei';
 const PAGES=['/','/chart','/chart?y=1986&m=8&d=20&sh=3&g=f','/heming','/knowledge','/knowledge/ziwei/love','/library','/library/quanshu','/library/quanshu/0','/patterns','/guides','/famous','/about','/privacy','/terms'];
-const b=await puppeteer.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:'new',userDataDir:'./.pptr-dark2'});
+const b=await puppeteer.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:'new',userDataDir:'./.pptr-fresh'});
 const p=await b.newPage();
 await p.setViewport({width:1280,height:900});
 const lines=[];
