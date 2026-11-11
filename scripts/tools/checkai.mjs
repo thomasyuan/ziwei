@@ -50,27 +50,39 @@ const page = (await browser.pages())[0] ?? await browser.newPage();
 await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1');
 await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
 
+// 厂商侧的两个接口都拦下来：POST /chat/completions（流式）+ GET /models（模型列表）
+const MODELS = {
+  object: 'list',
+  data: [
+    { id: 'deepseek-flash', object: 'model', owned_by: 'deepseek', name: 'DeepSeek-V4.1-Flash', context_window: 1048576 },
+    { id: 'deepseek-v4-pro', object: 'model', owned_by: 'deepseek', name: 'DeepSeek-V4-Pro', context_window: 1048576 },
+  ],
+};
 const outgoing = [];
 await page.setRequestInterception(true);
 page.on('request', req => {
   const url = req.url();
-  const isAI = url.includes('/chat/completions');
-  if (isAI) {
-    outgoing.push({ url, method: req.method(), headers: req.headers() });
-    const allow = BASE.replace(/(https?:\/\/[^/]+).*/, '$1');
-    if (req.method() === 'OPTIONS') {
-      req.respond({ status: 204, headers: {
-        'access-control-allow-origin': allow, 'access-control-allow-methods': 'POST',
-        'access-control-allow-headers': 'authorization,content-type',
-      } });
-      return;
-    }
-    req.respond({ status: 200, headers: {
-      'content-type': 'text/event-stream', 'access-control-allow-origin': allow,
-    }, body: `data: ${JSON.stringify({ choices: [{ delta: { content: ANSWER } }] })}\n\ndata: [DONE]\n\n` });
+  const isChat = url.includes('/chat/completions');
+  const isModels = url.endsWith('/models');
+  if (!isChat && !isModels) { req.continue(); return; }
+  outgoing.push({ url, method: req.method(), headers: req.headers(), body: req.postData?.() });
+  const allow = BASE.replace(/(https?:\/\/[^/]+).*/, '$1');
+  if (req.method() === 'OPTIONS') {
+    req.respond({ status: 204, headers: {
+      'access-control-allow-origin': allow, 'access-control-allow-methods': 'POST,GET',
+      'access-control-allow-headers': 'authorization,content-type',
+    } });
     return;
   }
-  req.continue();
+  if (isModels) {
+    req.respond({ status: 200, headers: {
+      'content-type': 'application/json', 'access-control-allow-origin': allow,
+    }, body: JSON.stringify(MODELS) });
+    return;
+  }
+  req.respond({ status: 200, headers: {
+    'content-type': 'text/event-stream', 'access-control-allow-origin': allow,
+  }, body: `data: ${JSON.stringify({ choices: [{ delta: { content: ANSWER } }] })}\n\ndata: [DONE]\n\n` });
 });
 const logs = [];
 page.on('console', m => logs.push(m.text()));
@@ -101,15 +113,44 @@ function clickByText(text) {
 
 const KEY_FIELD = 'input[type="password"]';
 
-async function fillKey() {
+async function fillKey({ captureDefaults = false } = {}) {
   await page.evaluate(() => localStorage.removeItem('ziwei-ai-settings'));
   const opened = await clickByText('设置 Key');
   if (!opened) throw new Error('没找到「设置 Key」按钮');
   await page.waitForSelector(KEY_FIELD);
+  // 先记下默认的 Base URL / 模型名（口径：DeepSeek 官方文档 = api.deepseek.com + deepseek-flash）
+  const defaults = captureDefaults ? await page.evaluate(() => {
+    const panel = document.querySelector('input[type="password"]').closest('div.rounded-2xl');
+    // 注意：没写 type 的 input 属性不存在，但 DOM 属性 .type 是 'text'，所以用属性过滤
+    const texts = [...panel.querySelectorAll('input')].filter(i => i.type === 'text').map(i => i.value);
+    // DOM 顺序：Model 输入框在前，Base URL 在后
+    return { provider: panel.querySelector('select')?.value, model: texts[0], baseUrl: texts[1] };
+  }) : null;
   await page.type(KEY_FIELD, KEY);
+  // 点「拉取模型列表」：Key + Base URL 就够，不必先保存
+  const pulled = await clickByText('拉取模型列表');
+  if (!pulled) throw new Error('没有「拉取模型列表」按钮');
+  await page.waitForFunction(() => {
+    const b = [...document.querySelectorAll('button')].find(x => x.textContent.trim() === '保存');
+    return !!b;
+  }, { timeout: 15000 });
+  await new Promise(r => setTimeout(r, 600));
+  const vars = await page.evaluate(() => {
+    const sel = [...document.querySelectorAll('select')].find(s => [...s.options].some(o => o.value === 'deepseek-v4-pro'));
+    return sel ? [...sel.options].map(o => o.value) : null;
+  });
+  // 切成第二个模型，验证选的模型真的进了请求体
+  if (vars) {
+    await page.evaluate(() => {
+      const sel = [...document.querySelectorAll('select')].find(s => [...s.options].some(o => o.value === 'deepseek-v4-pro'));
+      sel.value = 'deepseek-v4-pro';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  }
   const saved = await clickByText('保存');
   if (!saved) throw new Error('没有「保存」按钮');
   await new Promise(r => setTimeout(r, 300));
+  return { defaults, modelOptions: vars };
 }
 
 async function readStoredKey() {
@@ -120,15 +161,25 @@ async function readStoredKey() {
 }
 
 // ─── /chart：AI 追问 ─────────────────────────────────────────
+// 先前那个 profile 可能留着旧一版的设置：先清站点存储再重载，保证看的是默认值
 await page.goto(`${BASE}${BP}/chart?y=1986&m=8&d=20&sh=3&g=f`, { waitUntil: 'networkidle2' });
+await page.evaluate(() => localStorage.clear());
+await page.reload({ waitUntil: 'networkidle2' });
 const meta = await page.evaluate(() => document.querySelector('meta[name="viewport"]')?.content ?? '');
 ok(/width=device-width/.test(meta), `viewport meta：${meta || '（缺失）'}`);
 const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 ok(overflow <= 1, `390px 宽无横向溢出（overflow=${overflow}）`);
 
-await fillKey();
+outgoing.length = 0;
+const picked = await fillKey({ captureDefaults: true });
+const modelReqs = outgoing.filter(r => r.url.endsWith('/models') && r.method === 'GET');
+ok(picked.defaults?.baseUrl === 'https://api.deepseek.com', `默认 Base URL = ${picked.defaults?.baseUrl}（DeepSeek 官方不带 /v1）`);
+ok(picked.defaults?.model === 'deepseek-flash', `默认模型 = ${picked.defaults?.model}（deepseek-chat 是历史名）`);
+ok((picked.modelOptions ?? []).includes('deepseek-v4-pro'), `拉到的模型列表：${(picked.modelOptions ?? []).join('、')}`);
 const stored = await readStoredKey();
 ok(stored === KEY, 'Key 存进浏览器 localStorage（本站是静态站，没有服务器可收）');
+const storedModel = await page.evaluate(() => JSON.parse(localStorage.getItem('ziwei-ai-settings')).model);
+ok(storedModel === 'deepseek-v4-pro', `下拉里选的模型被保存：${storedModel}`);
 const keyFont = await page.evaluate(() => {
   const el = document.querySelector('input[type="password"]');
   el.focus();
@@ -159,6 +210,12 @@ const aiReq = outgoing.filter(r => r.method === 'POST' && r.url.includes('/chat/
 ok(aiReq.length === 1, `AI 只发一条请求到厂商接口（${aiReq[0]?.url}）`);
 ok(/api\.deepseek\.com/.test(aiReq[0]?.url ?? ''), '目标域是 api.deepseek.com（不是本站）');
 ok(aiReq[0]?.headers.authorization === `Bearer ${KEY}`, 'Authorization 头带 Key（Key 只在浏览器→厂商这条链路上）');
+const sentBody = JSON.parse(aiReq[0]?.body ?? '{}');
+ok(sentBody.model === 'deepseek-v4-pro', '请求体用的是下拉里选中的模型');
+ok(sentBody.thinking?.type === 'disabled', '默认关掉思考模式（否则正文可能为空）');
+ok(sentBody.max_tokens >= 4000, `max_tokens=${sentBody.max_tokens}`);
+ok(modelReqs.length >= 1, `模型列表走 GET /models（${modelReqs.length} 次，不花 token）`);
+ok(modelReqs.every(r => r.headers.authorization === `Bearer ${KEY}`), '/models 也只用这套 Key 鉴权');
 ok(!outgoing.some(r => new URL(r.url).origin !== new URL(BASE).origin && !r.url.includes('deepseek')), '没有多余的跨域请求');
 
 // ─── /heming：规则结论 + AI 深挖 ─────────────────────────────
@@ -186,6 +243,20 @@ await page.waitForFunction(
 const hemingReq = outgoing.filter(r => r.method === 'POST' && r.url.includes('/chat/completions'));
 ok(hemingReq.length === 1 && hemingReq[0].headers.authorization === `Bearer ${KEY}`, '合盘 AI 深挖同样直连厂商接口');
 ok(!outgoing.some(r => new URL(r.url).origin !== new URL(BASE).origin && !r.url.includes('deepseek')), '合盘页没有别的跨域调用');
+
+// ─── 桌面字号：桌面上不该用手机的 16px（视觉上会偏大） ──────────
+await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 1 });
+await page.goto(`${BASE}${BP}/chart?y=1986&m=8&d=20&sh=3&g=f`, { waitUntil: 'networkidle2' });
+await page.evaluate(() => {
+  const b = [...document.querySelectorAll('button')].find(x => x.textContent.trim() === '设置 Key');
+  b && b.click();
+});
+await page.waitForSelector(KEY_FIELD);
+const deskFonts = await page.evaluate(() => {
+  const panel = document.querySelector('input[type="password"]').closest('div.rounded-2xl');
+  return [...panel.querySelectorAll('input, select')].map(el => ({ tag: el.tagName, size: parseFloat(getComputedStyle(el).fontSize) }));
+});
+ok(deskFonts.every(f => f.size <= 14), `桌面字号 ≤14px：${[...new Set(deskFonts.map(f => f.size))].join('/')}px`);
 
 // ─── Key 不进日志 ───────────────────────────────────────────
 ok(!logs.some(l => l.includes(KEY)), `console 输出里没有完整 Key（共 ${logs.length} 条）`);

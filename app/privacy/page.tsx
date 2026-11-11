@@ -41,7 +41,9 @@ export default function PrivacyPage() {
           使用 AI 时，<strong>浏览器直接</strong>把「命盘摘要 + 当前主题的规则解读 + 你的提问」发到你所选厂商的
           OpenAI 兼容接口（DeepSeek / OpenAI / Moonshot / 通义），随请求带 <code>Authorization: Bearer &lt;Key&gt;</code>。
           这条请求不经过本站服务器，本站看不到内容也看不到 Key。厂商一侧按其隐私政策处理你的提问文本，
-          花费记在你自己的厂商账号。若你不想把出生资料送到第三方，就不要使用 AI 面板；
+          花费记在你自己的厂商账号。面板里的「拉取模型列表 / 测试连接」会额外发一条
+          <code>GET /models</code>：只带 Key，<strong>不带</strong>命盘与提问，用来把模型名做成下拉。
+          若你不想把出生资料送到第三方，就不要使用 AI 面板；
           排盘、13 维规则解读与合盘评分不需要 Key，完全可用。
         </p>
         <p style={{ fontSize: 13, marginTop: '8px' }}>

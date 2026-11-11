@@ -68,6 +68,14 @@ AI 追问用**你自己的 Key，存在浏览器里**（GitHub Pages 没有后�
 Key 写进本页的 `localStorage`（勾「记住」）或 `sessionStorage`（不勾 = 关掉标签页即失效）→
 浏览器带着它直连厂商接口。不填 Key 时排盘与 13 维规则解读照常完整可用，AI 段只留一行说明。
 
+面板细节（2026-11 按官方文档核对）：
+- **模型从接口拉**：填完 Key 自动 `GET {baseUrl}/models`，用下拉选（拉不到才退回手填）；默认 DeepSeek 是
+  `https://api.deepseek.com` + `deepseek-flash`（`deepseek-chat` 是历史名，旧的默认值读到会自动升级）。
+- **深度思考默认关**：DeepSeek 的 `thinking` 默认是开的，思考 token 也算 `max_tokens`——上限给小了就会
+  「请求成功、usage 在涨、正文一个字没有」。关掉后正文直接流出来；想开在面板里勾一下，界面会给「正在思考…」进度。
+- 解析同时认 `delta.content` 与 `delta.reasoning_content`；只出思考不出正文时会把思考显示出来并点明原因
+  （`finish_reason=length` 就是撞了 `max_tokens`），不会留空白气泡。
+
 ```bash
 cp .env.example .env.local
 # 站点根地址（sitemap / canonical / OG 用）

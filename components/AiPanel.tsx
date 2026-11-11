@@ -17,6 +17,11 @@ interface Props {
   dxIndex?: number;
 }
 
+/** 只取主机名用于「正在请求…」提示（解析失败就原样给） */
+function hostOf(url: string): string {
+  try { return new URL(url).host; } catch { return url; }
+}
+
 const QUICK: { topic: TopicKey; q: string }[] = [
   { topic: 'overview', q: '我的整体命格与人生主线是什么？最该发挥的天赋与最该避开的坑？' },
   { topic: 'career', q: '事业方向：适合上班、创业还是专业自由业？未来三年怎么走？' },
@@ -92,6 +97,8 @@ export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
     setLoading(true);
     accRef.current = '';
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+    // 先亮出目标地址：请求发不出去时用户也能看到「卡在哪」，配合 Network 面板排查
+    patchLast(`正在请求 ${settings ? `${hostOf(settings.baseUrl)} · ${settings.model}` : '厂商接口'}…`);
 
     try {
       // 系统提示在浏览器里现搭，与原先服务端那一版逐字一致：
@@ -105,7 +112,14 @@ export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
       await streamChatDirect(
         settings,
         msgs,
-        { maxTokens: 1500, temperature: 0.7, onDelta: patchLastAccum },
+        {
+          maxTokens: 4000,
+          temperature: 0.7,
+          thinking: settings?.thinking,
+          onDelta: patchLastAccum,
+          // 深度思考开着时正文要等思考完才来：先给个进度，别让气泡一直空着
+          onReasoning: () => { if (!accRef.current) patchLast('正在思考…（深度思考已开启，正文稍后出现）'); },
+        },
       );
     } catch (e) {
       patchLast(`调用没能发出：${e instanceof Error ? e.message : '未知异常'}。检查 Key、Base URL 与模型名（点上方「设置 Key」）。`);
@@ -212,7 +226,6 @@ export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
             onKeyDown={e => { if (e.key === 'Enter') send(input); }}
             placeholder="就这张盘提问：今年能换工作吗？什么时候结婚运最好？"
             className="input-base flex-1 input-key"
-            style={{ fontSize: '16px' }}
             enterKeyHint="send"
           />
           <button className="btn-accent" style={{ padding: '10px 18px', fontSize: '13px', opacity: loading ? 0.6 : 1 }} onClick={() => send(input)}>

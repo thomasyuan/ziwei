@@ -12,6 +12,11 @@ import SectionHead from '@/components/SectionHead';
 import AiKeySettings from '@/components/AiKeySettings';
 import { useAiSettings, isUsable, maskKey, type AiSettings } from '@/lib/ai/settings';
 
+/** 只取主机名用于「正在请求…」提示（解析失败就原样给） */
+function hostOf(url: string): string {
+  try { return new URL(url).host; } catch { return url; }
+}
+
 // ─── AiContent 渲染器（【标题】分段 + **加粗**，与排盘页的解读面板一致）────────
 function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
   const lines = text.split('\n');
@@ -135,10 +140,22 @@ export default function HemingPage() {
         return;
       }
 
+      // 先亮出目标地址：请求发不出去时也能看到「卡在哪」
+      setAnalysis(`${head}${HEMING_TAIL_MARK}正在请求 ${hostOf(settings!.baseUrl)} · ${settings!.model}…`);
       await streamChatDirect(
         settings,
         buildHemingMessages(cA, cB, q),
-        { maxTokens: 1600, temperature: 0.6, onDelta: chunk => { aiAccRef.current += chunk; paint(); } },
+        {
+          maxTokens: 4000,
+          temperature: 0.6,
+          thinking: settings?.thinking,
+          onDelta: chunk => { aiAccRef.current += chunk; paint(); },
+          onReasoning: () => {
+            if (!aiAccRef.current) {
+              setAnalysis(`${head}${HEMING_TAIL_MARK}正在思考…（深度思考已开启，正文稍后出现）`);
+            }
+          },
+        },
       );
       // scroll to analysis
       setTimeout(() => analysisRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);

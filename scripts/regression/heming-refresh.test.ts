@@ -27,6 +27,8 @@ const body = `export function makeRun(ctx) {
   const {formA,formB,setFormError,setAnalyzing,setAnalysis,setAnalysisError,
     setChartA,setChartB,generateChart,formToBirthInfo,aiAccRef,aiReady,settings,analysisRef} = ctx;
   const useCallback = (fn) => fn;
+  // 页面里的模块级小工具（不在抽取片段里）
+  const hostOf = (u) => { try { return new URL(u).host } catch { return u } };
   ${source.slice(start, end)}
   return runAnalysis;
 }`;

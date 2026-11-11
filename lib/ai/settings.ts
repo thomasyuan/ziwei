@@ -29,7 +29,12 @@ export interface AiSettings {
   apiKey: string;
   /** true → localStorage（跨会话记住）；false → sessionStorage（关掉标签页即失效） */
   remember: boolean;
+  /** DeepSeek 的深度思考（默认关：开着时思考 token 会吃满 max_tokens，答案容易空着回来） */
+  thinking?: boolean;
 }
+
+/** 上一版的 DeepSeek 默认值（base 带 /v1、模型 deepseek-chat）：读到就一次性升级到官方新口径 */
+const LEGACY_DEEPSEEK = { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' };
 
 /** 展示用：只留前 3 + 后 4 个字符，其余打点；绝不返回完整 Key */
 export function maskKey(key: string): string {
@@ -41,12 +46,19 @@ export function maskKey(key: string): string {
 
 function normalize(s: AiSettings): AiSettings {
   const preset = getPreset(s.provider);
+  const baseUrl = normalizeBaseUrl(s.baseUrl || preset.baseUrl);
+  let model = (s.model || preset.model).trim();
+  const isLegacyDeepseek = s.provider === 'deepseek'
+    && baseUrl === LEGACY_DEEPSEEK.baseUrl
+    && model === LEGACY_DEEPSEEK.model;
   return {
     provider: s.provider,
-    baseUrl: normalizeBaseUrl(s.baseUrl || preset.baseUrl),
-    model: (s.model || preset.model).trim(),
+    // 旧默认值自动升级（否则老用户一直用着 /v1 + 历史模型名，看不出哪里不对）
+    baseUrl: isLegacyDeepseek ? preset.baseUrl : baseUrl,
+    model: isLegacyDeepseek ? preset.model : model,
     apiKey: s.apiKey.trim(),
     remember: s.remember !== false,
+    thinking: s.thinking === true,
   };
 }
 

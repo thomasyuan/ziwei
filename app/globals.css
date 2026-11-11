@@ -282,6 +282,10 @@ body {
 .input-base:focus { border-color: var(--tx-0); }
 .input-base::placeholder { color: var(--tx-3); }
 
+/* Key 面板的输入/下拉：桌面用与正文一致的小字号；手机（≤767px）再放大到 16px，
+   那是 iOS Safari 不自动放大整页的下限，见文件末尾的移动端补充 */
+.input-key { font-size: 13px; }
+
 /* 分隔线 */
 .divider {
   width: 100%;
