@@ -8,9 +8,6 @@ services:
     environment:
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      # AI 追问（不配也能跑：排盘与规则解读不需要 Key）
-      # AI_PROVIDER: deepseek
-      # AI_API_KEY: sk-...
-      # AI_MODEL: deepseek-chat
-      # AI_BASE_URL: https://api.deepseek.com/v1
+      # 这里没有 AI Key 要配：Key 由用户在页面的「设置 Key」填，只存在他自己的浏览器里，
+      # 排盘页 / 合盘页由浏览器直连厂商接口，容器不经手、不留日志。
     restart: unless-stopped

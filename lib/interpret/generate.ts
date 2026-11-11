@@ -4,11 +4,12 @@
  * 纯函数：同一命盘同一参数恒得同一输出（不经 AI）。
  * 论断拼接顺序：定性 → 主星 → 四化 → 辅煞 → 三方四正 → 格局 → 运限 → 经典 → 建议。
  *
- * 本模块依赖 lib/ziwei/patterns.ts（server-only），只能在服务端调用（API 路由 / SSR）。
+ * 本模块依赖 lib/ziwei/patterns.ts（纯函数，已去 server-only 守卫）：排盘页在浏览器里
+ * 动态导入它出 13 维解读，AI 追问的 prompt 也用它，所以静态部署（GitHub Pages）功能完整。
  */
 
-// 注：本模块只在服务端调用（API 路由 / SSR）。这里不加 server-only 守卫，
-// 否则 tsx 跑的回归脚本会被 node 的 server-only 占位包拦住。
+// 注：这里不加 server-only 守卫 —— 排盘页 dynamic import 本模块（app/chart/page.tsx、lib/ai/requests.ts），
+// tsx 跑的回归脚本也要能 import 它。
 import type { ZiweiChart, Palace, SiHua } from '@/lib/ziwei/types';
 import { detectPatterns, type Pattern } from '@/lib/ziwei/patterns';
 import { getSiHuaByStem, getYearStemIndex } from '@/lib/ziwei/sihua';
@@ -250,7 +251,7 @@ const TOPIC_ADVICE: Record<TopicKey, string> = {
 
 /**
  * 生成一个主题的完整解读
- * @param patterns 预先算好的格局（服务端传入，避免客户端 bundling server-only 模块）
+ * @param patterns 预先算好的格局（调用方算一次传进来，避免逐主题重复扫盘）
  * @param year 流年年份（默认今年）
  * @param dxIndex 指定大限索引（默认当前大限）
  */

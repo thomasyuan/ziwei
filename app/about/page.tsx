@@ -77,8 +77,9 @@ export default function AboutPage() {
         <div className="card p-6" style={{ marginTop: '20px' }}>
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--tx-0)', marginBottom: '10px' }}>四 · 技术栈与自部署</div>
           <p style={{ fontSize: '13px', color: 'var(--tx-2)', lineHeight: 1.9 }}>
-            Next.js（App Router）+ React + Tailwind + TypeScript；
-            排盘在浏览器与服务端运行，解读与格局识别走服务端 API；古籍与知识库为静态生成，
+            Next.js（App Router）+ React + Tailwind + TypeScript；排盘、13 维解读与格局识别都在浏览器里跑
+            （论断库与格局识别是纯函数，动态导入做代码分割），所以 GitHub Pages 的纯静态部署也是完整功能；
+            AI 追问由浏览器带着用户自己的 Key 直连厂商接口，本站没有后端收 Key。古籍与知识库为静态生成，
             14 × 13 知识库页面 SSG 输出，sitemap 与 robots 自动生成。
           </p>
           <pre style={{
@@ -88,11 +89,14 @@ export default function AboutPage() {
 npm run dev          # 本地 http://localhost:3000
 npm run build        # 生产构建
 npm run typecheck
+npm run build:pages  # GitHub Pages 静态导出（out/，basePath=/ziwei）
 
 # .env.local
 NEXT_PUBLIC_SITE_URL=https://your-domain
-AI_PROVIDER=deepseek # openai / moonshot / dashscope / zhipu / ollama
-AI_API_KEY=...       # 不配 Key 时排盘与规则解读照常可用`}</pre>
+
+# AI Key 不在 .env 里：排盘页 / 合盘页的「设置 Key」填，只存进使用者自己的浏览器
+# （localStorage 勾「记住」，或 sessionStorage 关掉标签页即失效），浏览器直连厂商接口。
+# 不填 Key 时排盘与 13 维规则解读照常完整可用。`}</pre>
         </div>
 
         <div className="card p-6" style={{ marginTop: '20px' }}>

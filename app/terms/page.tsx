@@ -66,8 +66,9 @@ export default function TermsPage() {
 
         <h2 style={{ fontSize: 17, marginTop: 26, marginBottom: 10 }}>4. 无账号、无收费</h2>
         <p style={{ fontSize: 13 }}>
-          本站不设注册、会员与支付体系，也不出售解读服务。若部署者接入付费模型接口，费用由其自行承担，
-          与访问者无关。
+          本站不设注册、会员与支付体系，也不出售解读服务，也不代收任何模型接口费用：
+          AI 追问用的是访问者自己的 Key（存在其浏览器，由浏览器直连厂商接口），
+          费用由访问者与厂商之间结算，与本站无关。排盘与规则解读不需要 Key，始终免费可用。
         </p>
 
         <h2 style={{ fontSize: 17, marginTop: 26, marginBottom: 10 }}>5. 免责</h2>

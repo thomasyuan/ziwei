@@ -433,6 +433,18 @@ body {
   .chart-topbar { padding: 0 8px; gap: 6px; }
 }
 
+/* ─── 手机版补充（iPhone Safari 用 viewport meta 后这些断点才生效）───── */
+@media (max-width: 767px) {
+  /* 合盘页双表单：内联样式写死了 1fr 1fr，用 !important 压回单列 */
+  .heming-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+
+  /* 触控目标：iOS 上手指点按的友好尺寸（设置面板里的按钮偏小） */
+  .btn-accent, .btn-ghost { min-height: 44px; }
+
+  /* Key / Base URL / Model 输入：16px 起，避开 iOS Safari 聚焦时整页自动放大 */
+  .input-key { font-size: 16px; }
+}
+
 /* ─── 打印样式 ───────────────────────────────────────────── */
 @media print {
   .no-print { display: none !important; }

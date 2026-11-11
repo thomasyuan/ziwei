@@ -5,8 +5,8 @@
  * 输出 1–5 星评分 + 逐条依据 + 相处建议。
  */
 
-// 注：本模块只在服务端调用（API 路由 / SSR）。这里不加 server-only 守卫，
-// 否则 tsx 跑的回归脚本会被 node 的 server-only 占位包拦住。
+// 注：这里不加 server-only 守卫 —— 合盘页在浏览器里直接调用它（app/heming/page.tsx、lib/ai/requests.ts），
+// 静态部署（GitHub Pages）也能出规则结论。
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
 import { STAR_IN_FUQI_GU, SIHUA_IN_FUQI_GU } from '@/lib/ziwei/heming-knowledge';

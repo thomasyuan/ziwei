@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import type { TopicKey } from '@/lib/interpret/types';
 import { TOPIC_LABEL } from '@/lib/interpret/types';
+import { useAiSettings, maskKey, isUsable, type AiSettings } from '@/lib/ai/settings';
+import AiKeySettings from '@/components/AiKeySettings';
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
@@ -58,12 +60,27 @@ export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
+  const { settings, save, clear } = useAiSettings();
+  const ready = isUsable(settings);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
+
+  // 流式增量累计在闭包 ref 里，回调只把最后一条气泡刷成当前全文
+  const accRef = useRef('');
+  const patchLast = (acc: string) => setMessages(prev => {
+    const u = [...prev];
+    u[u.length - 1] = { role: 'assistant', content: acc };
+    return u;
+  });
+  const patchLastAccum = (chunk: string) => {
+    accRef.current += chunk;
+    patchLast(accRef.current);
+  };
 
   const send = async (text: string) => {
     if (!text.trim() || loadingRef.current) return;
@@ -73,62 +90,73 @@ export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
     setInput('');
     loadingRef.current = true;
     setLoading(true);
+    accRef.current = '';
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     try {
-      const res = await fetch('/api/interpret', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chart, messages: history, topic,
-          palaceName, dxIndex,
-          // 把当前主题的规则解读一并交给模型（服务端会重新生成，这里只作提示）
-        }),
-      });
-      if (!res.ok || !res.body) {
-        setMessages(prev => [...prev, { role: 'assistant', content: 'AI 接口调用失败，请检查服务端 AI_API_KEY 配置。' }]);
-        return;
-      }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let acc = '';
-      let pending = '';
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        pending += decoder.decode(value, { stream: true });
-        const lines = pending.split('\n');
-        pending = lines.pop() ?? '';
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const payload = line.slice(6);
-          if (payload === '[DONE]') break;
-          try {
-            acc += JSON.parse(payload).delta?.text ?? '';
-            setMessages(prev => {
-              const u = [...prev];
-              u[u.length - 1] = { role: 'assistant', content: acc };
-              return u;
-            });
-          } catch { /* skip */ }
-        }
-      }
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'AI 追问需要服务端：Docker / VPS 部署时配置 AI_API_KEY 才能用。静态站点（如 GitHub Pages）没有 AI 接口；排盘与规则解读不受影响。' }]);
+      // 系统提示在浏览器里现搭，与原先服务端那一版逐字一致：
+      // 格局 + 当前主题的规则解读 + 命盘摘要，再拼上对话历史。
+      // 动态导入做代码分割：论断库与排盘内核都是纯函数，静态站也跑得起来。
+      const { buildInterpretMessages } = await import('@/lib/ai/requests');
+      const { streamChatDirect } = await import('@/lib/ai/browser');
+
+      const msgs = buildInterpretMessages(chart, topic, { palaceName, dxIndex, history });
+
+      await streamChatDirect(
+        settings,
+        msgs,
+        { maxTokens: 1500, temperature: 0.7, onDelta: patchLastAccum },
+      );
+    } catch (e) {
+      patchLast(`调用没能发出：${e instanceof Error ? e.message : '未知异常'}。检查 Key、Base URL 与模型名（点上方「设置 Key」）。`);
     } finally {
       setLoading(false);
       loadingRef.current = false;
     }
   };
 
+  const configLabel = settings ? `${settings.provider} · ${settings.model}` : '未配置 Key';
+
   return (
     <div className="flex flex-col rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--bdr)', minHeight: '420px' }}>
       <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
-        <div className="text-[11px] tracking-[0.3em]" style={{ color: 'var(--ac)' }}>AI 追问</div>
-        <div className="text-[10px] mt-1" style={{ color: 'var(--tx-3)' }}>
-          当前上下文：{TOPIC_LABEL[topic]}{palaceName ? ` · ${palaceName}` : ''} · 服务端把命盘摘要与规则解读一起送入模型
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-[11px] tracking-[0.3em]" style={{ color: 'var(--ac)' }}>AI 追问</div>
+            <div className="text-[10px] mt-1 leading-relaxed" style={{ color: 'var(--tx-3)' }}>
+              当前上下文：{TOPIC_LABEL[topic]}{palaceName ? ` · ${palaceName}` : ''} · 浏览器把命盘摘要与规则解读直接送到模型
+            </div>
+            <div className="text-[10px] mt-1" style={{ color: ready ? 'var(--tx-2)' : 'var(--tx-3)' }}>
+              Key：{ready ? maskKey(settings!.apiKey) + ' · ' + configLabel : '未配置（存在本浏览器，不上传）'}
+            </div>
+          </div>
+          <button
+            onClick={() => setShowSettings(v => !v)}
+            className="btn-ghost shrink-0"
+            style={{ padding: '6px 12px', fontSize: '11px', whiteSpace: 'nowrap' }}
+          >
+            {showSettings ? '收起设置' : '设置 Key'}
+          </button>
         </div>
       </div>
+
+      {showSettings && (
+        <div className="px-4 pt-3">
+          <AiKeySettings
+            initial={settings}
+            onSave={(s: AiSettings) => save(s)}
+            onClear={clear}
+            onClose={() => setShowSettings(false)}
+          />
+        </div>
+      )}
+
+      {!ready && (
+        <div className="px-4 py-2.5 text-[11.5px] leading-[1.7]" style={{ color: 'var(--tx-2)', background: 'var(--ac-bg)', borderBottom: '1px solid var(--ac-bdr)' }}>
+          填一个你自己的 DeepSeek Key 就能开始追问：Key 存在本浏览器（可勾选「记住」，或关掉标签页即失效），
+          请求由浏览器直发 DeepSeek，本站不经手、不留日志。上方的排盘与 13 维规则解读不需要 Key。
+        </div>
+      )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[220px]">
         {messages.length === 0 && (
@@ -183,8 +211,9 @@ export default function AiPanel({ chart, topic, palaceName, dxIndex }: Props) {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') send(input); }}
             placeholder="就这张盘提问：今年能换工作吗？什么时候结婚运最好？"
-            className="input-base flex-1"
-            style={{ fontSize: '12.5px' }}
+            className="input-base flex-1 input-key"
+            style={{ fontSize: '16px' }}
+            enterKeyHint="send"
           />
           <button className="btn-accent" style={{ padding: '10px 18px', fontSize: '13px', opacity: loading ? 0.6 : 1 }} onClick={() => send(input)}>
             {loading ? '思考中' : '发送'}

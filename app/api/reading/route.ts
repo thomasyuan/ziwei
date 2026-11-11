@@ -3,7 +3,9 @@
  * body: { chart: ZiweiChart, year?: number, dxIndex?: number }
  * 返回：{ patterns, readings: TopicReading[], digest }
  *
- * 格局识别与论断生成在服务端（lib/ziwei/patterns.ts 是 server-only）。
+ * 只在 Docker / VPS（standalone）模式下存在；排盘页不调它 —— 论断生成与格局识别是纯函数，
+ * 排盘页在浏览器里动态导入 lib/interpret/generate（app/chart/page.tsx），静态部署也完整可用。
+ * 这条路由留着是给外部脚本 / 将来做「盘 → 预生成解读」查询用的。
  */
 
 import { NextResponse } from 'next/server';

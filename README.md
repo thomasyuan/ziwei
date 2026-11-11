@@ -17,7 +17,7 @@
 | `/guides` | 入门指南：安星五步、四化表（十干全表）、十二宫职责、读盘顺序、时辰对照与常见误区 |
 | `/famous` | 名人命盘对照（公开出生日期 + 估算时辰），按时辰地支索引直接起盘 |
 | `/about` | 本站的排盘口径、论断库构成、技术栈与自部署说明、许可与来源标注 |
-| `/privacy` `/terms` | 隐私与条款（无账号、无收费；写明 AI 会把命盘摘要送到模型接口） |
+| `/privacy` `/terms` | 隐私与条款（无账号、无收费；写明 AI Key 存在你自己的浏览器、命盘摘要会送到厂商接口） |
 | `/sitemap.xml` `/robots.txt` | 自动生成，含 182 篇知识库页与全部古籍章节页 |
 
 ## 排盘与解读口径（与上游仓库一致）
@@ -57,24 +57,25 @@ npm install
 npm run dev          # http://localhost:3000
 npm run build        # 生产构建（226 页静态生成）
 npm run typecheck
-npm test             # 17 条回归：排盘铁律、夏令时、立春边界、时辰索引、
-                     # 论断库四化合法性、知识库引文逐字核对、合盘流式解析…
+npm test             # 21 条回归：排盘铁律、夏令时、立春边界、时辰索引、
+                     # 论断库四化合法性、知识库引文逐字核对、合盘 prompt 跟随表单、
+                     # 浏览器直连 SSE 逐字节切分、Key 存储与「Key 不进日志」…
+node scripts/tools/checkai.mjs   # iPhone 视口端到端：Key 只落浏览器、请求只到厂商接口
 ```
 
-可选 AI（不配 Key 时排盘与规则解读照常可用，AI 面板会明确提示未配置）：
+AI 追问用**你自己的 Key，存在浏览器里**（GitHub Pages 没有后端，Key 也不经本站服务器）：
+排盘页 / 合盘页的「设置 Key」面板填 DeepSeek（或 OpenAI / Moonshot / 通义的 OpenAI 兼容接口）→
+Key 写进本页的 `localStorage`（勾「记住」）或 `sessionStorage`（不勾 = 关掉标签页即失效）→
+浏览器带着它直连厂商接口。不填 Key 时排盘与 13 维规则解读照常完整可用，AI 段只留一行说明。
 
 ```bash
 cp .env.example .env.local
 # 站点根地址（sitemap / canonical / OG 用）
 NEXT_PUBLIC_SITE_URL=https://your-domain
-# 任选一家 OpenAI 兼容接口
-AI_PROVIDER=deepseek        # deepseek | openai | moonshot | dashscope | zhipu | ollama
-AI_API_KEY=sk-...
-AI_MODEL=deepseek-chat      # 可覆盖
-AI_BASE_URL=https://...     # 可覆盖
 # 站长平台验证（可选）
 NEXT_PUBLIC_GOOGLE_VERIFICATION=
 NEXT_PUBLIC_BING_VERIFICATION=
+# AI Key **不在这里配**：在页面的「设置 Key」里填，只存进你自己的浏览器（见上）
 ```
 
 部署：标准 Next.js 应用，`next build` + `next start`，或推到 Vercel（需要环境变量）。无数据库、无外部服务依赖；`gen-catalog.mjs` 只在重生成格局目录时跑（约 4 分钟）。
@@ -90,24 +91,30 @@ NEXT_PUBLIC_BING_VERIFICATION=
 
 ```
 site/
-  app/            页面与 API 路由
-    api/reading   POST 命盘 JSON → 格局 + 13 维解读（服务端生成，patterns.ts 是纯函数）
-    api/interpret POST 命盘 + 对话 → AI 流式（SSE，data: {"delta":{"text":…}}）
-    api/heming    POST 双盘 → 规则结论 + AI 深挖（SSE）
+  app/            页面（静态导出后没有服务端 API）
+    api/reading   POST 命盘 JSON → 格局 + 13 维解读（只在 Docker/VPS 模式下存在；排盘页在浏览器里直接调 lib/*，不走这条）
     chart / heming / knowledge(+182 SSG) / library / patterns / guides / famous / about / privacy / terms
   components/     Header, Footer, BirthForm, ChartBoard, PalaceCell, TimeNav,
-                  ReadingPanel（13 维面板）, AiPanel（追问）, PatternsCard, ChartSummary,
-                  StarDetailPanel, ShareModal + ShareCardCanvas, StarField, ThemeProvider
+                  ReadingPanel（13 维面板）, AiPanel（追问）, AiKeySettings（Key 面板）,
+                  PatternsCard, ChartSummary, StarDetailPanel, ShareModal + ShareCardCanvas,
+                  StarField, ThemeProvider
   lib/
-    ziwei/        排盘内核（沿用开源仓库）：algorithm, sihua, patterns, cities,
-                  true-solar-time, dst-cn, clock-adjust, lunar-solar, school-*,
-                  shier-shen, yunxian-context, famous, heming-knowledge, history,
-                  db-analysis（接本站论断库）
-    interpret/    论断库 + 13 维生成器 + 合盘规则 + 格局目录 + SEO 装配
-    classics/     三部古籍全文与检索（公版）
-    nihai/        天纪/地纪/人纪资料模块
-    seo/          知识库 helper 与 slug 表
-  scripts/regression/ 17 条回归测试
+    ai/         providers（厂商预设 + 实测的浏览器直连 CORS 标记）、settings（Key 存浏览器，
+                打码显示、记住/不记住、清除）、browser（直连流式调用 + 测试连接）、
+                sse（逐字节切分的 SSE 解析）、requests（prompt 装配，与已删的服务端路由逐字一致）、
+                prompts（system 口径）
+    ziwei/      排盘内核（沿用开源仓库）：algorithm, sihua, patterns, cities,
+                true-solar-time, dst-cn, clock-adjust, lunar-solar, school-*,
+                shier-shen, yunxian-context, famous, heming-knowledge, history,
+                db-analysis（接本站论断库）
+    interpret/  论断库 + 13 维生成器 + 合盘规则 + 格局目录 + SEO 装配
+    classics/   三部古籍全文与检索（公版）
+    nihai/      天纪/地纪/人纪资料模块
+    seo/        知识库 helper 与 slug 表
+  scripts/regression/ 21 条回归测试
+  scripts/tools/  检查脚本：checkai（iPhone 视口端到端 + Key/请求落点）、checklayout、checkheader、
+                  checkbg、checkfull、checkscroll、checkmargin、checktheme、checktoggle、
+                  staticserve（本地验 out/）、gen-catalog、mkchart
 ```
 
 ## 可以继续做的方向
@@ -118,7 +125,7 @@ site/
 - 加「准/不准」反馈闭环，用于论断库迭代（哪些断语在真实盘上不准，改条件与分档）。
 ## 部署方式
 
-### A) Docker 镜像（含服务端，AI 可用）
+### A) Docker 镜像（含服务端，`/api/reading` 可用；AI 走浏览器直连）
 
 镜像已构建并推送到 Docker Hub：**`thomasyuan/ziwei:1.0.0`**（`linux/amd64`，约 360 MB，非 root 用户，带健康检查）。
 
@@ -126,18 +133,16 @@ site/
 docker pull thomasyuan/ziwei:1.0.0
 docker run -d --name ziwei -p 9999:3000 --restart unless-stopped thomasyuan/ziwei:1.0.0
 # 局域网访问：http://<宿主机IP>:9999
-
-# 带 AI 追问（OpenAI 兼容接口任选）：
-docker run -d --name ziwei -p 9999:3000 --restart unless-stopped   -e AI_PROVIDER=deepseek -e AI_API_KEY=sk-xxx   -e NEXT_PUBLIC_SITE_URL=http://192.168.66.35:9999   thomasyuan/ziwei:1.0.0
 ```
 
+- AI Key 不在容器里配：排盘页 / 合盘页的「设置 Key」填了之后由浏览器直连厂商接口，容器不碰 Key。
 - 容器内监听 `0.0.0.0:3000`（`HOSTNAME=0.0.0.0`、`PORT=3000` 已在镜像里设好）；`-p 9999:3000` 发布在宿主机所有网卡（`0.0.0.0`）。
 - `NEXT_PUBLIC_SITE_URL` 是**构建时**注入的（sitemap/canonical/OG 用），运行时改环境变量无效；重新构建时传：
   `docker build --build-arg NEXT_PUBLIC_SITE_URL=https://your-domain -t thomasyuan/ziwei:1.0.0 .`
 - 用 compose：`docker compose up -d`（见 `compose.yaml`）。
 - 本地构建：`docker build -t thomasyuan/ziwei:1.0.0 .`（多阶段，产物只含 `node:23-alpine` + standalone）。
 
-### B) GitHub Pages / 纯静态托管（AI 不可用）
+### B) GitHub Pages / 纯静态托管（AI 追问与 AI 深挖都可用）
 
 排盘、13 维解读、合盘规则、格局目录、古籍阅读与搜索**全在浏览器里运行**（论断库与格局识别是纯函数，动态导入做代码分割），所以可以静态导出：
 
@@ -150,10 +155,11 @@ npm run build:pages           # 带 basePath=/ziwei（把 /ziwei 换成你的仓
 
 `out/` 里已带 `public/.nojekyll`；部署到 Pages 时用 `out/` 作为发布目录。
 
-- 静态模式下没有服务端：AI 面板会提示「AI 追问需要服务端」；`/api/reading`（浏览器已本地生成，不走 API）与 `/api/heming`（AI 部分）不可用。
-- 规则解读与合盘评分在静态模式下完全可用。
-- 本地预览静态产物：`npm run serve:static`（http://127.0.0.1:3996）。
+- AI 追问在静态站可用：用户在页面里填自己的 Key（存本机浏览器），浏览器直连厂商接口，本站不经手、不留日志。
+- 规则解读与合盘评分在静态模式下完全可用（本来就不依赖 AI）。
+- `out/` 里没有 API 路由（`/api/reading` 不参与静态导出，排盘页本来也不调它）。
+- 本地预览静态产物：`npm run serve:static`（http://127.0.0.1:3996）；`node scripts/tools/checkai.mjs` 用 iPhone 视口验一遍 Key 与请求落点。
 
-### C) VPS / Vercel（服务端全功能）
+### C) VPS / Vercel（standalone，含 `/api/reading`）
 
-`npm run build`（standalone 产物）+ `node .next/standalone/server.js`；或推 Vercel（配 `AI_API_KEY` 环境变量）。
+`npm run build`（standalone 产物）+ `node .next/standalone/server.js`；或推 Vercel。AI Key 同样不在服务端配：由用户在页面里填，浏览器直连厂商接口。

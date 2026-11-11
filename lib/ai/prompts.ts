@@ -1,12 +1,12 @@
 /**
- * AI prompt 组装（服务端专用）
+ * AI prompt 组装（在浏览器里跑：排盘页 / 合盘页直连厂商前用）
  *
  * 口径：以倪海厦《天纪》体系为主，四化为核心，庙旺与三方四正并论；
  * 输出结构用 **【标题】** 分段，与前端渲染器一致。
  */
 
-// 注：本模块只在服务端调用（API 路由 / SSR）。这里不加 server-only 守卫，
-// 否则 tsx 跑的回归脚本会被 node 的 server-only 占位包拦住。
+// 注：这里不加 server-only 守卫 —— 静态导出（GitHub Pages）下装配在浏览器里执行，
+// tsx 跑的回归脚本也要能 import 它（scripts/regression/ai-interpret-prompt.test.ts 逐字比对）。
 import { HEMING_METHODOLOGY, STAR_IN_FUQI_GU, SIHUA_IN_FUQI_GU, MARRIAGE_STARS_BRIEF, HEMING_SCORE_CRITERIA } from '@/lib/ziwei/heming-knowledge';
 
 export function buildInterpretSystem(digest: string, reading: string, palaceHint?: string): string {

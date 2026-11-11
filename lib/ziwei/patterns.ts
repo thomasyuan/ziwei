@@ -16,7 +16,7 @@
  */
 
 // server-only 守卫在本项目去掉了：格局识别是纯函数，客户端组件（PatternsCard）也要调用；
-// 论断生成走服务端（lib/interpret/generate.ts 仍标 server-only）。
+// 论断生成（lib/interpret/generate.ts）同样在浏览器里跑，静态部署（GitHub Pages）功能才完整。
 import type { ZiweiChart, Palace, Star, SiHua } from './types';
 
 // ────────────────── 类型 ──────────────────

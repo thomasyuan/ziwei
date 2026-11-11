@@ -38,3 +38,6 @@ standalone.log
 .pptr-header
 
 .pptr-*
+
+# npm 本地缓存目录（npm ci --cache ./.npm-cache 用）
+.npm-cache/

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import Header from '@/components/Header';
@@ -7,6 +7,13 @@ import ScrollToTop from '@/components/ScrollToTop';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site';
+
+export const viewport: Viewport = {
+  // 手机版视口（iPhone Safari 必须靠这条才走 767px 断点：没有它整站按 980px 桌面宽度缩着渲染）
+  // 不设 maximum-scale，保留双指缩放（无障碍要求）
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: '紫微斗数排盘 · 十四主星四化 · 十三维解读',

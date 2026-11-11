@@ -146,7 +146,8 @@ function WorkspaceInner() {
         />
         <BirthForm onSubmit={openChart} />
         <p className="mt-6 text-[11px] leading-relaxed text-center" style={{ color: 'var(--tx-3)' }}>
-          出生资料只用于起盘，不存储于服务端；AI 追问会把命盘摘要送到所配置的大模型接口。
+          出生资料只用于起盘，排盘与 13 维解读都在浏览器内完成，不上传本站服务器；AI 追问用你自己的 Key
+          （存在本浏览器，可勾选「记住」，也可关掉标签页即失效），由浏览器直连厂商接口，本站不收 Key、不留日志。
         </p>
       </main>
     );
